@@ -1,58 +1,79 @@
 import { assertTransition, isTerminal, type FailureType, type RunState } from "@libs/core";
 import type { Db } from "@libs/db";
 import { events, runs } from "@libs/db";
-import { eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
+
+/**
+ * Thrown when a run's current state no longer matches the expected `from` —
+ * another worker already moved it, or the caller holds a stale view. This is the
+ * optimistic-concurrency signal; the orchestrator treats it as "not mine".
+ */
+export class StaleStateError extends Error {
+  constructor(
+    readonly runId: number,
+    readonly from: RunState,
+    readonly to: RunState,
+  ) {
+    super(`Run #${runId}: cannot transition ${from} → ${to} — current state is not '${from}'`);
+    this.name = "StaleStateError";
+  }
+}
 
 export class StateMachineOrchestrator {
-  constructor(private db: Db) {}
+  constructor(private readonly db: Db) {}
 
   /**
-   * Persists state transition to PostgreSQL before executing side-effects.
-   * Emits monotonic state change audit event.
+   * Move a run from `from` to `to` — atomically, persist-before-side-effect.
+   *
+   * In ONE transaction:
+   *   1. `assertTransition(from, to)` — the edge must be legal in code.
+   *   2. `UPDATE runs … WHERE id = runId AND state = from` — the DB-level
+   *      optimistic guard; also bumps `version` and stamps timestamps.
+   *   3. 0 rows updated ⇒ {@link StaleStateError} (someone else moved it).
+   *   4. append an audit event.
+   *
+   * The whole thing commits before any stage side effect runs, so a crash can
+   * never leave the state advanced without its event, or vice versa.
    */
   async transition(
     runId: number,
-    fromState: RunState,
-    toState: RunState,
+    from: RunState,
+    to: RunState,
     dataJson?: Record<string, unknown>,
     failureType?: FailureType,
   ): Promise<void> {
-    assertTransition(fromState, toState);
+    assertTransition(from, to);
+    const now = new Date();
 
-    const updateFields: Record<string, unknown> = {
-      state: toState,
-      updatedAt: new Date(),
-    };
+    await this.db.transaction(async (tx) => {
+      const updated = await tx
+        .update(runs)
+        .set({
+          state: to,
+          version: sql`${runs.version} + 1`,
+          updatedAt: now,
+          ...(failureType ? { failureType } : {}),
+          ...(to === "ingesting" ? { startedAt: now } : {}),
+          ...(isTerminal(to) ? { completedAt: now } : {}),
+        })
+        .where(and(eq(runs.id, runId), eq(runs.state, from)))
+        .returning({ id: runs.id });
 
-    if (failureType) {
-      updateFields["failureType"] = failureType;
-    }
+      if (updated.length === 0) {
+        throw new StaleStateError(runId, from, to);
+      }
 
-    if (toState === "ingesting" && !dataJson?.["resuming"]) {
-      updateFields["startedAt"] = new Date();
-    }
-
-    if (isTerminal(toState)) {
-      updateFields["completedAt"] = new Date();
-    }
-
-    // 1. Update run record in Postgres
-    await this.db
-      .update(runs)
-      .set(updateFields)
-      .where(eq(runs.id, runId));
-
-    // 2. Persist audit event
-    await this.db.insert(events).values({
-      runId,
-      type: `run.state_changed.${toState}`,
-      state: toState,
-      dataJson: {
-        fromState,
-        toState,
-        failureType,
-        ...(dataJson ?? {}),
-      },
+      await tx.insert(events).values({
+        runId,
+        type: `run.state.${to}`,
+        state: to,
+        dataJson: {
+          from,
+          to,
+          ...(failureType ? { failureType } : {}),
+          ...(dataJson ?? {}),
+        },
+      });
     });
   }
 }
