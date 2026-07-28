@@ -48,6 +48,13 @@ export const DEFAULT_PRICING: Pricing = {
   strong: { inPerMTok: 5.0, outPerMTok: 25.0 },
 };
 
+/** Strip a leading/trailing markdown code fence some models add even in JSON mode. */
+export function stripCodeFences(text: string): string {
+  const t = text.trim();
+  const m = /^```(?:json)?\s*\n?([\s\S]*?)\n?```$/.exec(t);
+  return m ? m[1]!.trim() : t;
+}
+
 export function roleForStage(stage: string, override?: LLMRole): LLMRole {
   return override ?? STAGE_ROUTING[stage] ?? "cheap";
 }
@@ -125,7 +132,7 @@ export class LlmClient {
 
     let parsed: unknown;
     try {
-      parsed = JSON.parse(text);
+      parsed = JSON.parse(stripCodeFences(text));
     } catch {
       // We paid for the tokens — trace + charge even on a bad response.
       await this.trace(params, model, usage, costUsd, latencyMs, { rawText: text }, "invalid_json", "not valid JSON");
