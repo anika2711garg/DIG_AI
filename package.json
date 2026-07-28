@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "worker": "tsx scripts/worker.ts"
+    "worker": "tsx scripts/worker.ts",
+    "demo": "tsx scripts/demo.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3",
