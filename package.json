@@ -10,7 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2b": "vitest run tests/e2b.contract.test.ts",
-    "test:db": "vitest run tests/orchestrator.transition.contract.test.ts",
+    "test:db": "vitest run orchestrator",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
