@@ -15,7 +15,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "worker": "tsx scripts/worker.ts",
-    "demo": "tsx scripts/demo.ts"
+    "demo": "tsx scripts/demo.ts",
+    "eval": "tsx scripts/eval.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.38.3",

@@ -18,6 +18,9 @@ next-env.d.ts
 # Test / coverage
 coverage/
 
+# Generated eval reports (reproducible via `pnpm eval`; the pinned task set is committed)
+eval/report.*
+
 # OS / editor
 .DS_Store
 *.pem

@@ -62,6 +62,11 @@ export interface LoopResult {
   confidence?: Confidence;
   failureType?: FailureType;
   summary: string;
+  costUsd: number;
+  /** The agent's fix (only on success) — for held-out eval scoring. */
+  patchedFiles?: Record<string, string>;
+  /** The reproduction test filename the model wrote (only on success). */
+  reproFile?: string;
 }
 
 const fileBlock = (files: Record<string, string>): string =>
@@ -84,7 +89,7 @@ export async function resolveRun(deps: LoopDeps, input: LoopInput): Promise<Loop
 
   const fail = async (from: RunState, ft: FailureType, reason: string): Promise<LoopResult> => {
     await orch.transition(runId, from, "failed", { reason }, ft);
-    return { runId, finalState: "failed", failureType: ft, summary: reason };
+    return { runId, finalState: "failed", failureType: ft, summary: reason, costUsd: budget.spentUsd };
   };
   const runPytest = async (files: Record<string, string>, target = ""): Promise<TestReport> =>
     (
@@ -178,5 +183,8 @@ export async function resolveRun(deps: LoopDeps, input: LoopInput): Promise<Loop
     finalState: "awaiting_human",
     confidence: grade.confidence,
     summary: `verified (${grade.confidence}); ${verdict.reason}; spent $${budget.spentUsd.toFixed(4)}`,
+    costUsd: budget.spentUsd,
+    patchedFiles: applied.files,
+    reproFile,
   };
 }
