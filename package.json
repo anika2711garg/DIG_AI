@@ -9,7 +9,7 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2b": "vitest run e2b",
+    "test:e2b": "vitest run e2b verifier.contract",
     "test:db": "vitest run orchestrator tests/llm-client",
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
