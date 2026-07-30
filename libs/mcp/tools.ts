@@ -1,5 +1,6 @@
 import { repos, runs, type Db } from "@libs/db";
 import type { E2BSandbox } from "@libs/integrations/e2b";
+import { detectAdapter } from "@libs/lang/registry";
 import type { LlmClient } from "@libs/integrations/llm-client";
 import { resolveRun } from "@libs/orchestrator/loop";
 import { ingest, type IssueFetcher } from "@libs/services/ingestor";
@@ -19,7 +20,6 @@ export interface McpDeps {
   llm: LlmClient;
   createPr: CreateDraftPr;
   fetchIssue: IssueFetcher;
-  template: string;
   githubWritesEnabled: boolean;
   budgetUsd: number;
 }
@@ -48,14 +48,15 @@ export function buildTools(deps: McpDeps): Record<string, McpTool> {
     ),
 
     run_tests: tool(
-      "Run pytest on the given files in a NETWORK-OFF sandbox; returns a structured TestReport. Verdicts come from code, never the model.",
-      { files: z.record(z.string()), command: z.string().default("pytest -q") },
+      "Run the repo's test suite in a NETWORK-OFF sandbox; the language (pytest/vitest/…) is auto-detected from the files. Returns a structured TestReport. Verdicts come from code, never the model.",
+      { files: z.record(z.string()), command: z.string().optional() },
       async ({ files, command }) => {
+        const adapter = detectAdapter(files);
         const r = await deps.sandbox.run({
-          template: deps.template,
+          template: adapter.e2bTemplate,
           networkEnabled: false,
           files,
-          command,
+          command: command ?? adapter.testCommand(),
         });
         return { exitCode: r.exitCode, timedOut: r.timedOut, report: r.report };
       },
@@ -99,7 +100,6 @@ export function buildTools(deps: McpDeps): Record<string, McpTool> {
             llm: deps.llm,
             sandbox: deps.sandbox,
             fetchIssue: deps.fetchIssue,
-            template: deps.template,
             budgetUsd: deps.budgetUsd,
             mode: "permissive",
           },

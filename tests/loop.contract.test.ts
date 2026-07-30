@@ -1,5 +1,5 @@
 import { createDb, events, repos, runs, traces, type Db } from "@libs/db";
-import { E2BSandbox, PYTEST_TEMPLATE } from "@libs/integrations/e2b";
+import { E2BSandbox } from "@libs/integrations/e2b";
 import { LlmClient, openRouterGenerate } from "@libs/integrations/llm-client";
 import { resolveRun, type LoopDeps } from "@libs/orchestrator/loop";
 import type { RawIssue } from "@libs/services/ingestor";
@@ -62,7 +62,6 @@ describe.skipIf(!hasAll)("verified loop — live (real LLM + E2B + Neon)", () =>
       }),
       sandbox: new E2BSandbox(cfg.e2bApiKey),
       fetchIssue: async () => ISSUE,
-      template: PYTEST_TEMPLATE,
       budgetUsd: cfg.budgetUsdPerRun,
       mode: "permissive",
     };

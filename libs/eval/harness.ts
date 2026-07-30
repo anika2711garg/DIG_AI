@@ -1,6 +1,7 @@
 import type { Mode } from "@libs/core";
 import { repos, runs, type Db } from "@libs/db";
 import type { E2BSandbox } from "@libs/integrations/e2b";
+import { detectAdapter } from "@libs/lang/registry";
 import type { LlmClient } from "@libs/integrations/llm-client";
 import { resolveRun } from "@libs/orchestrator/loop";
 import { eq } from "drizzle-orm";
@@ -11,7 +12,6 @@ export interface EvalDeps {
   db: Db;
   llm: LlmClient;
   sandbox: E2BSandbox;
-  template: string;
   budgetUsd: number;
   mode?: Mode;
 }
@@ -49,7 +49,6 @@ async function runTask(deps: EvalDeps, task: EvalTask): Promise<EvalTaskResult> 
         llm: deps.llm,
         sandbox: deps.sandbox,
         fetchIssue: async () => task.issue,
-        template: deps.template,
         budgetUsd: deps.budgetUsd,
         mode: deps.mode ?? "permissive",
       },
@@ -75,11 +74,13 @@ async function runTask(deps: EvalDeps, task: EvalTask): Promise<EvalTaskResult> 
   let resolved = false;
   let detail = result.summary;
   if (result.finalState === "awaiting_human" && result.patchedFiles) {
+    // Score with the SAME language the loop detected — gold test runs on the adapter's runtime.
+    const adapter = detectAdapter(task.files);
     const gold = await deps.sandbox.run({
-      template: deps.template,
+      template: adapter.e2bTemplate,
       networkEnabled: false,
       files: { ...result.patchedFiles, [task.gold.file]: task.gold.code },
-      command: `pytest ${task.gold.file} -q`,
+      command: adapter.testCommand(task.gold.file),
     });
     const r = gold.report;
     resolved = Boolean(r && r.tests > 0 && r.failures === 0 && r.errors === 0);

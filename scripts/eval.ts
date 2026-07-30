@@ -11,7 +11,7 @@ import { createDb } from "@libs/db";
 import { runEval, type EvalDeps } from "@libs/eval/harness";
 import { buildReport, formatReportMarkdown } from "@libs/eval/report";
 import { SEED_TASKS } from "@libs/eval/seed-tasks";
-import { E2BSandbox, PYTEST_TEMPLATE } from "@libs/integrations/e2b";
+import { E2BSandbox } from "@libs/integrations/e2b";
 import { LlmClient, openRouterGenerate } from "@libs/integrations/llm-client";
 import { loadConfig } from "@util/config";
 
@@ -27,7 +27,6 @@ async function main() {
         generate: openRouterGenerate(cfg.openrouterApiKey),
       }),
       sandbox: new E2BSandbox(cfg.e2bApiKey),
-      template: PYTEST_TEMPLATE,
       budgetUsd: cfg.budgetUsdPerRun,
       mode: cfg.defaultMode,
     };

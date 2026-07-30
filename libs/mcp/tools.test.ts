@@ -14,7 +14,6 @@ const baseDeps = (over: Partial<McpDeps>): McpDeps => ({
   llm: {} as unknown as McpDeps["llm"],
   createPr: async () => ({ number: 1, url: "" }),
   fetchIssue: async () => ({ repo: "r", number: 1, title: "t", body: "b", labels: [], comments: [] }),
-  template: "tpl",
   githubWritesEnabled: true,
   budgetUsd: 2,
   ...over,

@@ -9,7 +9,7 @@
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 import { createDb } from "@libs/db";
-import { E2BSandbox, PYTEST_TEMPLATE } from "@libs/integrations/e2b";
+import { E2BSandbox } from "@libs/integrations/e2b";
 import { LlmClient, openRouterGenerate } from "@libs/integrations/llm-client";
 import { createMcpServer } from "@libs/mcp/server";
 import { loadConfig } from "@util/config";
@@ -32,7 +32,6 @@ async function main() {
     fetchIssue: async () => {
       throw new Error("GitHub issue fetch not configured — set GITHUB_TOKEN");
     },
-    template: PYTEST_TEMPLATE,
     githubWritesEnabled: cfg.githubWritesEnabled,
     budgetUsd: cfg.budgetUsdPerRun,
   });
