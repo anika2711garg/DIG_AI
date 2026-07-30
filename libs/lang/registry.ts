@@ -1,11 +1,18 @@
+import { goAdapter } from "./go";
 import { javascriptAdapter } from "./javascript";
 import { pythonAdapter } from "./python";
+import { rustAdapter } from "./rust";
 import type { LanguageAdapter } from "./types";
 
 export type { LanguageAdapter } from "./types";
 
 /** All registered language adapters. Add one here to support a new language. */
-export const ADAPTERS: readonly LanguageAdapter[] = [pythonAdapter, javascriptAdapter];
+export const ADAPTERS: readonly LanguageAdapter[] = [
+  pythonAdapter,
+  javascriptAdapter,
+  goAdapter,
+  rustAdapter,
+];
 
 export function getAdapter(id: string): LanguageAdapter | undefined {
   return ADAPTERS.find((a) => a.id === id);

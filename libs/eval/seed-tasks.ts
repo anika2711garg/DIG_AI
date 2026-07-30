@@ -109,6 +109,49 @@ export const SEED_TASKS: EvalTask[] = [
     note: "TypeScript / vitest — wrong operator",
   },
   {
+    id: "go-off-by-one-add",
+    repo: "seed/calc-go",
+    files: {
+      "go.mod": "module calc\n\ngo 1.22\n",
+      "calc.go": "package calc\n\nfunc Add(a, b int) int {\n\treturn a + b - 1\n}\n",
+    },
+    issue: issue(
+      "seed/calc-go",
+      7,
+      "Add() is off by one",
+      "Add(2, 3) returns 4, expected 5.\nFails with:  calc_test.go:8: expected 5, got 4",
+    ),
+    gold: {
+      file: "calc_gold_test.go",
+      code:
+        'package calc\n\nimport "testing"\n\nfunc TestGoldAdd(t *testing.T) {\n' +
+        '\tif Add(10, 20) != 30 {\n\t\tt.Fatalf("expected 30, got %d", Add(10, 20))\n\t}\n' +
+        '\tif Add(0, 0) != 0 {\n\t\tt.Fatalf("expected 0, got %d", Add(0, 0))\n\t}\n}\n',
+    },
+    note: "Go / gotestsum — arithmetic off-by-one",
+  },
+  {
+    id: "rust-wrong-operator-multiply",
+    repo: "seed/mathlib-rs",
+    files: {
+      "Cargo.toml": '[package]\nname = "mathlib"\nversion = "0.1.0"\nedition = "2021"\n',
+      "src/lib.rs": "pub fn multiply(a: i32, b: i32) -> i32 {\n    a + b\n}\n",
+    },
+    issue: issue(
+      "seed/mathlib-rs",
+      8,
+      "multiply() adds instead of multiplying",
+      "multiply(3, 4) returns 7, expected 12.\nPanics with:  assertion `left == right` failed: left: 7, right: 12",
+    ),
+    gold: {
+      file: "tests/gold.rs",
+      code:
+        "use mathlib::multiply;\n\n#[test]\nfn gold_multiply() {\n" +
+        "    assert_eq!(multiply(3, 4), 12);\n    assert_eq!(multiply(5, 5), 25);\n}\n",
+    },
+    note: "Rust / cargo-nextest — wrong operator",
+  },
+  {
     id: "wrong-issue-greet",
     repo: "seed/greet",
     files: { "greet.py": "def greet(name):\n    return f'Hello {name}'\n" },

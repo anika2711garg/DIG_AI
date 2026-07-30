@@ -52,6 +52,10 @@ const FORBIDDEN_ENV = [
 export const PYTEST_TEMPLATE = "issue-to-pr-pytest";
 /** Cached base template (node:22 + vitest), built via scripts/build-template.ts. */
 export const NODE_TEMPLATE = "issue-to-pr-node";
+/** Cached base template (go:1.24 + gotestsum), built via scripts/build-template.ts. */
+export const GO_TEMPLATE = "issue-to-pr-go";
+/** Cached base template (rust:1.82 + cargo-nextest), built via scripts/build-template.ts. */
+export const RUST_TEMPLATE = "issue-to-pr-rust";
 
 const DEFAULT_WORKDIR = "/home/user/work";
 const JUNIT_FILENAME = ".junit.xml";

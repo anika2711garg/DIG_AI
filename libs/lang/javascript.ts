@@ -53,6 +53,7 @@ export const javascriptAdapter: LanguageAdapter = {
   id: "javascript",
   displayName: "JavaScript / TypeScript",
   sourceExtensions: [".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs"],
+  manifestFiles: ["package.json", "tsconfig.json"],
   e2bTemplate: NODE_TEMPLATE,
   testFramework: "vitest",
   reproTestExample: "repro.test.js",

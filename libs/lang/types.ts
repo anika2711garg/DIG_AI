@@ -17,6 +17,9 @@ export interface LanguageAdapter {
   displayName: string;
   /** Extensions of files that can be localized + patched (never docs/config). */
   sourceExtensions: string[];
+  /** Primary build-manifest basenames (package.json, Cargo.toml, go.mod, …). Shown
+   *  to the model as prompt context so it knows package/crate names + import paths. */
+  manifestFiles: string[];
   /** E2B template with the toolchain + a JUnit-emitting test runner. */
   e2bTemplate: string;
   /** Test-runner name, woven into the reproduce/patch prompts. */

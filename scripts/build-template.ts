@@ -10,7 +10,7 @@
  *                          bin symlinked onto PATH)
  * Per-repo templates (deps baked in) can extend these later.
  */
-import { NODE_TEMPLATE, PYTEST_TEMPLATE } from "@libs/integrations/e2b";
+import { GO_TEMPLATE, NODE_TEMPLATE, PYTEST_TEMPLATE, RUST_TEMPLATE } from "@libs/integrations/e2b";
 import { Template, defaultBuildLogger, type TemplateBuilder } from "e2b";
 
 const VITEST_VERSION = "2.1.9";
@@ -39,9 +39,49 @@ function nodeTemplate(): TemplateBuilder {
     });
 }
 
+/**
+ * go:1.22 + gotestsum. The E2B runtime PATH is a fixed /usr/local/bin:/usr/bin:/bin
+ * (the image's own PATH is NOT applied), and build steps run as a NON-root user, so
+ * we install as root and land every runtime binary on /usr/local/bin: gotestsum via
+ * GOBIN, and a `go` symlink (gotestsum shells out to `go test`). GOCACHE/GOPATH
+ * default under the writable $HOME, so no runtime env is required.
+ */
+function goTemplate(): TemplateBuilder {
+  return Template()
+    .fromImage("golang:1.24")
+    .runCmd("GOBIN=/usr/local/bin /usr/local/go/bin/go install gotest.tools/gotestsum@latest", {
+      user: "root",
+    })
+    .makeSymlink("/usr/local/go/bin/go", "/usr/local/bin/go", { user: "root", force: true })
+    .setEnvs({ GOPROXY: "off", GOFLAGS: "-mod=mod", GOTOOLCHAIN: "local" });
+}
+
+/**
+ * rust:1.82 + cargo-nextest (prebuilt binary — fast, vs. compiling from source).
+ * Same PATH constraint as Go: install as root and symlink cargo + rustc onto
+ * /usr/local/bin. The run user's default CARGO_HOME (~/.cargo) is made writable for
+ * cargo's package-cache lock, and ~/.rustup is symlinked to the baked toolchain so
+ * the rustup proxies resolve it without any runtime env.
+ */
+function rustTemplate(): TemplateBuilder {
+  return Template()
+    .fromImage("rust:1.82")
+    .aptInstall(["curl"])
+    .runCmd("curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C /usr/local/bin cargo-nextest", {
+      user: "root",
+    })
+    .runCmd("mkdir -p /home/user/.cargo && chmod -R 0777 /home/user/.cargo", { user: "root" })
+    .makeSymlink("/usr/local/cargo/bin/cargo", "/usr/local/bin/cargo", { user: "root", force: true })
+    .makeSymlink("/usr/local/cargo/bin/rustc", "/usr/local/bin/rustc", { user: "root", force: true })
+    .makeSymlink("/usr/local/rustup", "/home/user/.rustup", { user: "root", force: true })
+    .setEnvs({ CARGO_NET_OFFLINE: "true" });
+}
+
 const TEMPLATES: Record<string, { name: string; build: () => TemplateBuilder }> = {
   python: { name: PYTEST_TEMPLATE, build: pythonTemplate },
   node: { name: NODE_TEMPLATE, build: nodeTemplate },
+  go: { name: GO_TEMPLATE, build: goTemplate },
+  rust: { name: RUST_TEMPLATE, build: rustTemplate },
 };
 
 async function buildOne(key: string, apiKey: string) {

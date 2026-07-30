@@ -12,6 +12,7 @@ export const pythonAdapter: LanguageAdapter = {
   id: "python",
   displayName: "Python",
   sourceExtensions: [".py"],
+  manifestFiles: ["pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile"],
   e2bTemplate: PYTEST_TEMPLATE,
   testFramework: "pytest",
   reproTestExample: "test_repro.py",
