@@ -11,7 +11,8 @@ import type { StackFrame } from "./ingestor";
  */
 
 export interface Symbol {
-  kind: "def" | "class";
+  /** Language-specific kind: def/class (py), function/class/const (js), fn/struct (rust)… */
+  kind: string;
   name: string;
   line: number;
 }
@@ -23,20 +24,32 @@ export interface FileSignature {
 
 export type RepoMap = FileSignature[];
 
-const TOP_LEVEL_SYMBOL = /^(def|class)\s+([A-Za-z_]\w*)/;
+/** Extract top-level Python def/class signatures from a source string. */
+export function topLevelSymbols(content: string): Symbol[] {
+  const re = /^(def|class)\s+([A-Za-z_]\w*)/;
+  const symbols: Symbol[] = [];
+  const lines = content.split("\n");
+  for (let i = 0; i < lines.length; i++) {
+    const m = re.exec(lines[i]!);
+    if (m) symbols.push({ kind: m[1]!, name: m[2]!, line: i + 1 });
+  }
+  return symbols;
+}
 
-/** Extract module-level def/class signatures from each Python file. */
-export function buildRepoMap(files: Record<string, string>): RepoMap {
+/**
+ * Build a repo map from source files. Which files count + how symbols are
+ * extracted are language-specific (defaults to Python); callers pass an
+ * adapter's `sourceExtensions` + `symbolExtractor` for other languages.
+ */
+export function buildRepoMap(
+  files: Record<string, string>,
+  sourceExtensions: string[] = [".py"],
+  symbolExtractor: (content: string) => Symbol[] = topLevelSymbols,
+): RepoMap {
   const map: RepoMap = [];
   for (const [path, content] of Object.entries(files)) {
-    if (!path.endsWith(".py")) continue;
-    const symbols: Symbol[] = [];
-    const lines = content.split("\n");
-    for (let i = 0; i < lines.length; i++) {
-      const m = TOP_LEVEL_SYMBOL.exec(lines[i]!);
-      if (m) symbols.push({ kind: m[1] as "def" | "class", name: m[2]!, line: i + 1 });
-    }
-    map.push({ path, symbols });
+    if (!sourceExtensions.some((ext) => path.endsWith(ext))) continue;
+    map.push({ path, symbols: symbolExtractor(content) });
   }
   return map;
 }
@@ -84,11 +97,17 @@ function matchesFrame(filePath: string, framePath: string): boolean {
 }
 
 /** Rank files by likely relevance to the issue. Deterministic and stable. */
-export function rankFiles(files: Record<string, string>, issue: LocalizeInput): RankedFile[] {
+export function rankFiles(
+  files: Record<string, string>,
+  issue: LocalizeInput,
+  sourceExtensions: string[] = [".py"],
+): RankedFile[] {
   const kws = keywords(`${issue.title}\n${issue.body}`);
 
-  // Patch candidates are source files (Python-only v1), never docs/config.
-  const sources = Object.entries(files).filter(([path]) => path.endsWith(".py"));
+  // Patch candidates are source files, never docs/config.
+  const sources = Object.entries(files).filter(([path]) =>
+    sourceExtensions.some((ext) => path.endsWith(ext)),
+  );
 
   const ranked: RankedFile[] = sources.map(([path, content]) => {
     let score = 0;

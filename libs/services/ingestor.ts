@@ -64,8 +64,12 @@ function combinedText(issue: RawIssue): string {
   return [issue.title, issue.body, ...issue.comments.map((c) => c.body)].join("\n");
 }
 
-/** Structure a raw issue into a screened digest. Pure. */
-export function ingest(issue: RawIssue): IssueDigest {
+/** Structure a raw issue into a screened digest. Pure. The stack-frame parser is
+ *  language-specific (defaults to Python); callers pass an adapter's parser. */
+export function ingest(
+  issue: RawIssue,
+  parseFrames: (text: string) => StackFrame[] = parseStackFrames,
+): IssueDigest {
   const text = combinedText(issue);
   return {
     repo: issue.repo,
@@ -74,7 +78,7 @@ export function ingest(issue: RawIssue): IssueDigest {
     body: issue.body,
     labels: issue.labels,
     comments: issue.comments,
-    stackFrames: parseStackFrames(text),
+    stackFrames: parseFrames(text),
     injection: checkPromptInjection(text),
   };
 }
