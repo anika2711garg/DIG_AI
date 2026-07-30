@@ -15,6 +15,8 @@
     "typecheck": "tsc --noEmit",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "build:template": "tsx scripts/build-template.ts",
+    "node:smoke": "tsx scripts/node-smoke.ts",
     "worker": "tsx scripts/worker.ts",
     "demo": "tsx scripts/demo.ts",
     "eval": "tsx scripts/eval.ts",

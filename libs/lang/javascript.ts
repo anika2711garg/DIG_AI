@@ -1,3 +1,4 @@
+import { NODE_TEMPLATE } from "@libs/integrations/e2b";
 import type { StackFrame } from "@libs/services/ingestor";
 import type { Symbol } from "@libs/services/localizer";
 import type { ReportedSymptom } from "@libs/services/reproducer";
@@ -52,7 +53,7 @@ export const javascriptAdapter: LanguageAdapter = {
   id: "javascript",
   displayName: "JavaScript / TypeScript",
   sourceExtensions: [".js", ".ts", ".jsx", ".tsx", ".mjs", ".cjs"],
-  e2bTemplate: "issue-to-pr-node",
+  e2bTemplate: NODE_TEMPLATE,
   testFramework: "vitest",
   reproTestExample: "repro.test.js",
   testCommand: (file) =>

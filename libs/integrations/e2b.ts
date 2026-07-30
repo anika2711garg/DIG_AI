@@ -50,6 +50,8 @@ const FORBIDDEN_ENV = [
 
 /** Cached base template (python:3.11 + pytest), built via scripts/build-template.ts. */
 export const PYTEST_TEMPLATE = "issue-to-pr-pytest";
+/** Cached base template (node:22 + vitest), built via scripts/build-template.ts. */
+export const NODE_TEMPLATE = "issue-to-pr-node";
 
 const DEFAULT_WORKDIR = "/home/user/work";
 const JUNIT_FILENAME = ".junit.xml";
