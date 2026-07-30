@@ -10,7 +10,10 @@ async function main() {
   const { db, close } = createDb(process.env.DATABASE_URL_DIRECT!, { max: 1 });
   await db.execute(sql`DROP SCHEMA IF EXISTS public CASCADE`);
   await db.execute(sql`CREATE SCHEMA public`);
-  console.log("public schema reset — run `pnpm db:migrate` next");
+  // Drizzle keeps its migration journal in a separate `drizzle` schema; without
+  // dropping it too, `db:migrate` sees 0000 as applied and recreates nothing.
+  await db.execute(sql`DROP SCHEMA IF EXISTS drizzle CASCADE`);
+  console.log("public + drizzle schemas reset — run `pnpm db:migrate` next");
   await close();
 }
 
