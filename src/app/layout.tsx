@@ -1,21 +1,19 @@
 import type { Metadata } from "next";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "DIG AI — Autonomous Issue-to-PR Engine",
-  description: "Headless AI agent pipeline that ingests GitHub issues, localizes code, generates pytest reproductions, verifies patches, and requests human approval for draft PRs.",
+  title: "Issue → PR",
+  description:
+    "Autonomous issue-to-PR agent — reproduces a bug, patches it, and verifies the fix in a network-off sandbox, then gates on human approval.",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="h-full light">
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 antialiased selection:bg-rose-500 selection:text-white">
-        {children}
-      </body>
+    <html lang="en">
+      <body className="min-h-screen antialiased">{children}</body>
     </html>
   );
 }
