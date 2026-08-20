@@ -9,7 +9,7 @@ export default async function EvalPage() {
 
   return (
     <AppShell title="Evaluation" crumbs="Dashboards / Eval">
-      <p className="mb-6 max-w-2xl text-sm text-[#94A3B8]">
+      <p className="mb-8 max-w-2xl text-sm leading-6 text-[#94A3B8]">
         Dual-reported from persisted runs: overall resolve rate and the stages that actually produced
         evidence. Empty until the worker writes results.
       </p>

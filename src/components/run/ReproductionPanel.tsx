@@ -8,9 +8,10 @@ export function ReproductionPanel({
   state: RunState;
   confidence?: Confidence | null;
 }) {
-  const failed = state === "reproducing" || confidence === "unreproduced";
-  const passing = state === "verifying" || state === "awaiting_human" || state === "opening_pr" || state === "done";
-  const tone = passing && confidence !== "unreproduced" ? "green" : failed ? "red" : "slate";
+  const failed = confidence === "unreproduced" || state === "failed";
+  const passing =
+    ["verifying", "awaiting_human", "opening_pr", "done"].includes(state) && !failed;
+  const tone = passing ? "green" : failed ? "red" : "slate";
 
   return (
     <div

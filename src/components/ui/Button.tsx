@@ -1,12 +1,16 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/cn";
 import { springTap } from "@/lib/motion";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger" | "warning" | "white" | "hero";
+
+const BASE =
+  "inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50";
 
 const VARIANTS: Record<Variant, string> = {
   hero: "border border-white/20 bg-gradient-to-r from-[#38BDF8] via-[#7DD3FC] to-[#F8FAFC] text-[#05070B] shadow-[0_0_28px_rgba(56,189,248,0.22)] hover:shadow-[0_0_36px_rgba(56,189,248,0.34)]",
@@ -28,6 +32,7 @@ export function Button({
   variant = "primary",
   disabled,
   type = "button",
+  href,
   onClick,
 }: {
   children: ReactNode;
@@ -35,8 +40,26 @@ export function Button({
   variant?: Variant;
   disabled?: boolean;
   type?: "button" | "submit";
+  href?: string;
   onClick?: () => void;
 }) {
+  const classes = cn(BASE, VARIANTS[variant], className);
+
+  if (href && !disabled) {
+    return (
+      <motion.div
+        className="inline-flex"
+        whileHover={{ y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        transition={springTap}
+      >
+        <Link href={href} className={classes}>
+          {children}
+        </Link>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.button
       type={type}
@@ -45,11 +68,7 @@ export function Button({
       whileHover={disabled ? undefined : { y: -2 }}
       whileTap={disabled ? undefined : { scale: 0.98 }}
       transition={springTap}
-      className={cn(
-        "inline-flex items-center justify-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50",
-        VARIANTS[variant],
-        className,
-      )}
+      className={classes}
     >
       {children}
     </motion.button>

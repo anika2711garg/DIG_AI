@@ -1,7 +1,3 @@
-"use client";
-
-import { useReducedMotion } from "framer-motion";
-
 const SPARKS = [
   { left: "18%", top: "42%", delay: "0s" },
   { left: "32%", top: "28%", delay: "1.4s" },
@@ -14,10 +10,8 @@ const SPARKS = [
 ];
 
 export function HeroHorizon() {
-  const reduce = useReducedMotion();
-
   return (
-    <div className="pointer-events-none absolute inset-x-0 top-0 h-[620px] overflow-hidden" aria-hidden>
+    <div className="pointer-events-none absolute inset-x-0 top-0 h-[92vh] overflow-hidden" aria-hidden>
       <div className="hero-horizon-glow" />
       <svg
         className="absolute left-1/2 top-[8%] h-[520px] w-[160%] -translate-x-1/2"
@@ -41,10 +35,10 @@ export function HeroHorizon() {
           stroke="url(#arc-stroke)"
           strokeWidth="2.2"
           filter="url(#arc-blur)"
-          className={reduce ? undefined : "hero-arc-pulse"}
+          className="hero-arc-pulse"
         />
         <path d="M40 360 C 280 40, 920 40, 1160 360" stroke="url(#arc-stroke)" strokeWidth="1" opacity="0.9" />
-        {!reduce ? <circle r="3.5" fill="#E0F2FE" filter="url(#arc-blur)" className="hero-arc-dot" /> : null}
+        <circle r="3.5" fill="#E0F2FE" filter="url(#arc-blur)" className="hero-arc-dot" />
       </svg>
 
       <span className="hero-ray left-[22%]" style={{ animationDelay: "0s" }} />
@@ -53,15 +47,13 @@ export function HeroHorizon() {
       <span className="hero-ray left-[62%] h-[340px] opacity-70" style={{ animationDelay: "1.8s" }} />
       <span className="hero-ray left-[78%] opacity-50" style={{ animationDelay: "0.4s" }} />
 
-      {!reduce
-        ? SPARKS.map((spark, i) => (
-            <span
-              key={i}
-              className="hero-spark"
-              style={{ left: spark.left, top: spark.top, animationDelay: spark.delay }}
-            />
-          ))
-        : null}
+      {SPARKS.map((spark, i) => (
+        <span
+          key={i}
+          className="hero-spark"
+          style={{ left: spark.left, top: spark.top, animationDelay: spark.delay }}
+        />
+      ))}
     </div>
   );
 }

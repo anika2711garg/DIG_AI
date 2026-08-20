@@ -71,10 +71,10 @@ export function ApprovalView({
           />
         </div>
         <div className="mt-5 flex flex-wrap gap-3">
-          <Button variant="primary" disabled={pending || status !== "pending"} onClick={() => decide("approve")}>
+          <Button variant="primary" disabled={pending || !awaiting} onClick={() => decide("approve")}>
             Approve
           </Button>
-          <Button variant="danger" disabled={pending || status !== "pending"} onClick={() => decide("reject")}>
+          <Button variant="danger" disabled={pending || !awaiting} onClick={() => decide("reject")}>
             Reject
           </Button>
         </div>

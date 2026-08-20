@@ -18,9 +18,9 @@ export function EventStream({ events }: { events: RunEvent[] }) {
           <p className="text-[#64748B]">Waiting for events<span className="terminal-cursor" /></p>
         ) : (
           <AnimatePresence initial={false}>
-            {events.map((event) => (
+            {events.map((event, index) => (
               <motion.div
-                key={event.id}
+                key={`${event.id}-${event.at}-${index}`}
                 initial={event.id === newest ? { opacity: 0, x: -5 } : false}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}

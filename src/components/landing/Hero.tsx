@@ -1,29 +1,29 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
-import Link from "next/link";
 
 import { HeroConsole } from "@/components/landing/HeroConsole";
 import { HeroHorizon } from "@/components/landing/HeroHorizon";
+import { InkUnderline } from "@/components/human/InkUnderline";
 import { LiveIndicator } from "@/components/motion/LiveIndicator";
 import { Button } from "@/components/ui/Button";
-import { fadeUp, fadeUpReduced } from "@/lib/motion";
+import { fadeUp } from "@/lib/motion";
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
 export function Hero() {
-  const reduce = useReducedMotion();
-  const variants = reduce ? fadeUpReduced : fadeUp;
+  const reduce = useMotionPreference();
 
   return (
-    <section className="relative overflow-hidden pt-28 sm:pt-32">
+    <section className="relative flex min-h-screen flex-col overflow-hidden pt-28 sm:pt-32">
       <HeroHorizon />
 
-      <div className="relative mx-auto flex max-w-3xl flex-col items-center px-5 text-center">
+      <div className="relative mx-auto flex w-full max-w-5xl flex-col items-center px-5 text-center">
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={variants}
-          className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(96,165,250,0.28)] bg-[#0D111A]/70 px-3 py-1 text-xs text-[#E2E8F0] shadow-[0_0_24px_rgba(59,130,246,0.12)]"
+          variants={fadeUp}
+          className="mb-6 inline-flex items-center gap-2 rounded-md border border-[rgba(148,163,184,0.2)] bg-[#0D111A]/70 px-2.5 py-1 font-mono text-[11px] text-[#CBD5E1]"
         >
           <span className="relative inline-flex h-1.5 w-1.5">
             <span className="absolute inset-0 rounded-full bg-[#60A5FA] status-pulse" />
@@ -32,63 +32,64 @@ export function Hero() {
           Early Access Beta
         </motion.div>
 
-        <div className="space-y-2">
+        <div className="space-y-1">
           <motion.h1
             initial="hidden"
             animate="visible"
-            variants={variants}
+            variants={fadeUp}
             transition={{ delay: reduce ? 0 : 0.06 }}
-            className="text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-[#F8FAFC] sm:text-6xl"
+            className="text-[2.6rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#F8FAFC] sm:text-[4.25rem] lg:text-[5rem]"
           >
-            Build Faster With
+            Build faster with
           </motion.h1>
           <motion.h1
             initial="hidden"
             animate="visible"
-            variants={variants}
+            variants={fadeUp}
             transition={{ delay: reduce ? 0 : 0.12 }}
-            className="bg-gradient-to-b from-white to-[#93C5FD] bg-clip-text text-[2.4rem] font-semibold leading-[1.05] tracking-tight text-transparent sm:text-6xl"
+            className="text-[2.7rem] leading-[1.05] text-[#F8FAFC] sm:text-[4.4rem] lg:text-[5.15rem]"
           >
-            Lumine Insights.
+            <span className="font-serif italic font-normal tracking-normal text-[#E2E8F0]">
+              Lumine
+            </span>{" "}
+            <InkUnderline>
+              <span className="font-semibold tracking-[-0.03em]">Insights.</span>
+            </InkUnderline>
           </motion.h1>
         </div>
 
         <motion.p
           initial="hidden"
           animate="visible"
-          variants={variants}
+          variants={fadeUp}
           transition={{ delay: reduce ? 0 : 0.22 }}
-          className="mt-6 max-w-xl text-[15px] leading-7 text-[#94A3B8]"
+          className="mt-6 max-w-[36rem] text-[15px] leading-7 text-[#94A3B8] sm:text-base"
         >
-          A minimal AI-powered system that transforms complex workflows into clear, glowing,
-          effortless structures — helping you ship ideas faster.
+          Issue in, draft PR out — but only after a failing test proves the bug exists.
+          If we can&apos;t reproduce it, we stop. That&apos;s the product.
         </motion.p>
 
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={variants}
+          variants={fadeUp}
           transition={{ delay: reduce ? 0 : 0.3 }}
           className="mt-8 flex flex-wrap items-center justify-center gap-3"
         >
-          <Link href="/runs">
-            <Button variant="hero" className="group min-w-[148px]">
-              Get Started
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.7} />
-            </Button>
-          </Link>
-          <a href="#pipeline">
-            <Button variant="secondary" className="min-w-[148px]">
-              <Play className="h-3.5 w-3.5" strokeWidth={1.7} />
-              Watch Demo
-            </Button>
-          </a>
+          <Button href="/runs" variant="hero" className="group min-w-[148px]">
+            Get Started
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" strokeWidth={1.7} />
+          </Button>
+          <Button href="#pipeline" variant="secondary" className="min-w-[148px]">
+            <Play className="h-3.5 w-3.5" strokeWidth={1.7} />
+            Watch Demo
+          </Button>
         </motion.div>
 
         <motion.div
           initial="hidden"
           animate="visible"
-          variants={variants}
+          variants={fadeUp}
           transition={{ delay: reduce ? 0 : 0.4 }}
           className="mt-6"
         >
@@ -96,7 +97,9 @@ export function Hero() {
         </motion.div>
       </div>
 
-      <HeroConsole />
+      <div className="relative mt-auto w-full">
+        <HeroConsole />
+      </div>
     </section>
   );
 }

@@ -1,7 +1,5 @@
 "use client";
 
-import { useReducedMotion } from "framer-motion";
-
 const PARTICLES = [
   { top: "18%", left: "12%", delay: "0s" },
   { top: "26%", left: "78%", delay: "2s" },
@@ -18,8 +16,6 @@ const PARTICLES = [
 ];
 
 export function GlowBackground() {
-  const reduce = useReducedMotion();
-
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
       <div className="absolute inset-0 bg-[#05070B]" />
@@ -27,14 +23,13 @@ export function GlowBackground() {
       <div className="ambient-glow ambient-glow-a -left-[8%] top-[-8%]" />
       <div className="ambient-glow ambient-glow-b right-[-6%] top-[28%]" />
       <div className="ambient-glow ambient-glow-a bottom-[-18%] left-[30%] opacity-40" />
-      {!reduce &&
-        PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            className="particle"
-            style={{ top: p.top, left: p.left, animationDelay: p.delay }}
-          />
-        ))}
+      {PARTICLES.map((p, i) => (
+        <span
+          key={i}
+          className="particle"
+          style={{ top: p.top, left: p.left, animationDelay: p.delay }}
+        />
+      ))}
     </div>
   );
 }

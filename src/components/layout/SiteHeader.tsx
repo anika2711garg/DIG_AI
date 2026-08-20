@@ -1,32 +1,41 @@
 "use client";
 
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Menu, X } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
-const LINKS = [
+const MARKETING_LINKS = [
   { href: "#features", label: "Features" },
-  { href: "#templates", label: "Templates", dropdown: true },
+  { href: "#templates", label: "Modes", dropdown: true },
   { href: "#docs", label: "Docs" },
   { href: "#pricing", label: "Pricing" },
 ];
 
-const TEMPLATES = [
+const APP_LINKS = [
+  { href: "/runs", label: "Runs" },
+  { href: "/eval", label: "Eval" },
+];
+
+const MODES = [
   { href: "#templates", title: "Strict", body: "Reproduce or refuse." },
   { href: "#templates", title: "Permissive", body: "Graded confidence, default mode." },
   { href: "#templates", title: "Vibes", body: "Ablation baseline only." },
 ];
 
-export function SiteHeader() {
-  const reduce = useReducedMotion();
+export function SiteHeader({ variant = "marketing" }: { variant?: "marketing" | "app" }) {
+  const reduce = useMotionPreference();
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const [modesOpen, setModesOpen] = useState(false);
+  const links = variant === "app" ? APP_LINKS : MARKETING_LINKS;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -42,22 +51,22 @@ export function SiteHeader() {
       transition={{ duration: reduce ? 0.15 : 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
-        scrolled ? "bg-[#05070B]/78 backdrop-blur-xl" : "bg-transparent",
+        scrolled || variant === "app" ? "bg-[#05070B]/78 backdrop-blur-xl" : "bg-transparent",
       )}
     >
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8">
+      <div className="mx-auto flex h-16 w-full max-w-[1500px] items-center justify-between px-5 sm:px-8 lg:px-10">
         <Link href="/" className="relative z-10">
           <Logo />
         </Link>
 
         <nav className="hidden items-center gap-8 md:flex">
-          {LINKS.map((link) =>
-            link.dropdown ? (
+          {links.map((link) =>
+            "dropdown" in link && link.dropdown ? (
               <div
                 key={link.label}
                 className="relative"
-                onMouseEnter={() => setTemplatesOpen(true)}
-                onMouseLeave={() => setTemplatesOpen(false)}
+                onMouseEnter={() => setModesOpen(true)}
+                onMouseLeave={() => setModesOpen(false)}
               >
                 <a
                   href={link.href}
@@ -67,14 +76,14 @@ export function SiteHeader() {
                   <ChevronDown className="h-3.5 w-3.5" strokeWidth={1.7} />
                 </a>
                 <AnimatePresence>
-                  {templatesOpen ? (
+                  {modesOpen ? (
                     <motion.div
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 6 }}
                       className="absolute left-1/2 top-full z-20 mt-3 w-64 -translate-x-1/2 rounded-xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A]/95 p-2 shadow-2xl backdrop-blur-xl"
                     >
-                      {TEMPLATES.map((item) => (
+                      {MODES.map((item) => (
                         <a
                           key={item.title}
                           href={item.href}
@@ -89,26 +98,43 @@ export function SiteHeader() {
                 </AnimatePresence>
               </div>
             ) : (
-              <a
+              <Link
                 key={link.label}
                 href={link.href}
-                className="nav-link text-[13px] text-[#94A3B8] hover:text-[#F8FAFC]"
+                className={cn(
+                  "nav-link text-[13px] text-[#94A3B8] hover:text-[#F8FAFC]",
+                  variant === "app" &&
+                    (link.href === "/runs"
+                      ? pathname.startsWith("/runs")
+                      : pathname.startsWith(link.href)) &&
+                    "text-[#F8FAFC]",
+                )}
+                data-active={
+                  variant === "app" &&
+                  (link.href === "/runs" ? pathname.startsWith("/runs") : pathname.startsWith(link.href))
+                    ? "true"
+                    : undefined
+                }
               >
                 {link.label}
-              </a>
+              </Link>
             ),
           )}
         </nav>
 
         <div className="hidden items-center gap-4 md:flex">
-          <Link href="/runs" className="nav-link text-[13px] text-[#94A3B8] hover:text-[#F8FAFC]">
-            Sign in
-          </Link>
-          <Link href="/runs">
-            <Button variant="white" className="h-9 px-4 text-[13px]">
-              Get Started
-            </Button>
-          </Link>
+          {variant === "app" ? (
+            <Link href="/" className="nav-link text-[13px] text-[#94A3B8] hover:text-[#F8FAFC]">
+              Landing
+            </Link>
+          ) : (
+            <Link href="/runs" className="nav-link text-[13px] text-[#94A3B8] hover:text-[#F8FAFC]">
+              Sign in
+            </Link>
+          )}
+          <Button href="/runs" variant="white" className="h-9 px-4 text-[13px]">
+            Get Started
+          </Button>
         </div>
 
         <button
@@ -130,19 +156,17 @@ export function SiteHeader() {
             className="border-t border-[rgba(148,163,184,0.12)] bg-[#05070B]/95 px-5 py-4 backdrop-blur-xl md:hidden"
           >
             <div className="flex flex-col gap-3 text-sm text-[#94A3B8]">
-              {LINKS.map((link) => (
-                <a key={link.label} href={link.href} onClick={() => setOpen(false)}>
+              {links.map((link) => (
+                <Link key={link.label} href={link.href} onClick={() => setOpen(false)}>
                   {link.label}
-                </a>
+                </Link>
               ))}
-              <Link href="/runs" onClick={() => setOpen(false)}>
-                Sign in
+              <Link href={variant === "app" ? "/" : "/runs"} onClick={() => setOpen(false)}>
+                {variant === "app" ? "Landing" : "Sign in"}
               </Link>
-              <Link href="/runs" onClick={() => setOpen(false)}>
-                <Button variant="white" className="w-full">
-                  Get Started
-                </Button>
-              </Link>
+              <Button href="/runs" variant="white" className="w-full">
+                Get Started
+              </Button>
             </div>
           </motion.div>
         ) : null}

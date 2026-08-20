@@ -1,11 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { StatusDot } from "@/components/motion/StatusDot";
 import { cn } from "@/lib/cn";
 import { PIPELINE_STAGES, stageStatus } from "@/lib/pipeline";
 import type { RunState } from "@/lib/types";
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
 function toneFor(status: ReturnType<typeof stageStatus>) {
   if (status === "complete") return "green" as const;
@@ -22,7 +23,7 @@ export function AgentPipeline({
   current?: RunState;
   compact?: boolean;
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useMotionPreference();
 
   return (
     <ol

@@ -13,7 +13,26 @@ import { StatusBadge } from "@/components/ui/StatusBadge";
 import { api } from "@/lib/api";
 import { LIVE_STATUS } from "@/lib/pipeline";
 import { isActiveState, runLabel, runTone } from "@/lib/status";
-import type { Run, RunEvent } from "@/lib/types";
+import type { Run, RunEvent, RunState } from "@/lib/types";
+
+const SSE_EVENT_TYPES = [
+  "run.created",
+  "run.state.created",
+  "run.state.ingesting",
+  "run.state.localizing",
+  "run.state.reproducing",
+  "run.state.patching",
+  "run.state.verifying",
+  "run.state.awaiting_human",
+  "run.state.opening_pr",
+  "run.state.done",
+  "run.state.failed",
+  "run.state.cancelled",
+];
+
+function asRunState(value: unknown): RunState | undefined {
+  return typeof value === "string" && Object.hasOwn(LIVE_STATUS, value) ? (value as RunState) : undefined;
+}
 
 export function RunView({ initialRun, initialEvents }: { initialRun: Run; initialEvents: RunEvent[] }) {
   const [run, setRun] = useState(initialRun);
@@ -50,26 +69,47 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
 
   useEffect(() => {
     const source = new EventSource(`/api/v1/runs/${run.id}/stream`);
-    source.onmessage = (message) => {
+    const ingest = (message: MessageEvent) => {
       try {
         const data = JSON.parse(message.data) as Record<string, unknown>;
-        setEvents((prev) => [
-          ...prev,
-          {
-            id: Number(message.lastEventId || prev.length + 1),
-            runId: run.id,
-            type: message.type || "event",
-            state: typeof data.state === "string" ? (data.state as Run["state"]) : run.state,
-            dataJson: data,
-            at: new Date().toISOString(),
-          },
-        ]);
+        const eventId = Number(message.lastEventId);
+        const eventType = message.type && message.type !== "message" ? message.type : "event";
+        const nextState =
+          asRunState(data.state) ??
+          asRunState(data.to) ??
+          asRunState(eventType.startsWith("run.state.") ? eventType.slice("run.state.".length) : undefined);
+        setEvents((prev) => {
+          if (Number.isFinite(eventId) && eventId > 0 && prev.some((event) => event.id === eventId)) {
+            return prev;
+          }
+          return [
+            ...prev,
+            {
+              id: Number.isFinite(eventId) && eventId > 0 ? eventId : (prev.at(-1)?.id ?? 0) + 1,
+              runId: run.id,
+              type: eventType,
+              state: nextState,
+              dataJson: data,
+              at: new Date().toISOString(),
+            },
+          ];
+        });
+        if (nextState) {
+          setRun((current) => (current.state === nextState ? current : { ...current, state: nextState }));
+        }
       } catch {
         /* ignore malformed SSE */
       }
     };
+    source.onmessage = ingest;
+    for (const type of SSE_EVENT_TYPES) {
+      source.addEventListener(type, ingest);
+    }
+    source.onerror = () => {
+      source.close();
+    };
     return () => source.close();
-  }, [run.id, run.state]);
+  }, [run.id]);
 
   const seconds = useMemo(() => Math.floor(elapsed / 1000), [elapsed]);
   const tone = runTone(run.state);

@@ -1,11 +1,12 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 
 import { cn } from "@/lib/cn";
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
 export function Logo({ className, compact = false }: { className?: string; compact?: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = useMotionPreference();
 
   return (
     <span className={cn("inline-flex items-center gap-2 text-[#F8FAFC]", className)}>

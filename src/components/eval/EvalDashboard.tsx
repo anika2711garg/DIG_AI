@@ -80,7 +80,7 @@ function Metric({
         hidden: { opacity: 0, y: 16, scale: 0.98 },
         visible: { opacity: 1, y: 0, scale: 1 },
       }}
-      className="card-interactive rounded-2xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A] p-4"
+      className="card-interactive rounded-xl border border-[rgba(148,163,184,0.12)] bg-[#080B12]/80 p-5"
     >
       <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748B]">{label}</p>
       <p className="mt-2 text-2xl font-semibold">

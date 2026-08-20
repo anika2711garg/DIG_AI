@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import type { ReactNode } from "react";
 
 import { fadeUp, fadeUpReduced, viewportOnce } from "@/lib/motion";
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
 export function AnimatedSection({
   children,
@@ -16,7 +17,7 @@ export function AnimatedSection({
   delay?: number;
   id?: string;
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useMotionPreference();
 
   return (
     <motion.section

@@ -22,7 +22,8 @@ export async function fetchRepos(): Promise<Repo[]> {
 
 export async function fetchRuns(): Promise<Run[]> {
   try {
-    return await read<Run[]>("/api/v1/runs");
+    const runs = await read<Run[]>("/api/v1/runs");
+    return runs.filter((run) => run.issueNumber != null && run.repoId != null);
   } catch {
     return [];
   }
@@ -32,6 +33,7 @@ export async function fetchRun(id: string): Promise<Run | null> {
   try {
     const run = await read<Run & { error?: unknown }>(`/api/v1/runs/${id}`);
     if ("error" in run && run.error) return null;
+    if (run.issueNumber == null || run.repoId == null) return null;
     return run;
   } catch {
     return null;

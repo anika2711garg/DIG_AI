@@ -20,6 +20,7 @@
   --error: #ef4444;
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+  --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
 }
 
 @theme inline {
@@ -43,6 +44,34 @@ body {
 
 body {
   overflow-x: hidden;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  opacity: 0.13;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.ink-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.ink-underline svg {
+  position: absolute;
+  left: -2%;
+  bottom: -0.18em;
+  width: 104%;
+  height: 0.42em;
+  overflow: visible;
 }
 
 ::selection {
@@ -208,7 +237,7 @@ body {
 }
 
 .card-interactive:hover {
-  transform: translateY(-4px);
+  translate: 0 -4px;
   border-color: rgba(59, 130, 246, 0.28);
   background: #111722;
   box-shadow: 0 16px 40px rgba(15, 23, 42, 0.45), 0 0 0 1px rgba(59, 130, 246, 0.08);
@@ -284,6 +313,94 @@ body {
 
 .data-dot {
   animation: data-travel 2.8s linear infinite;
+}
+
+.laptop {
+  position: relative;
+  width: 100%;
+  perspective: 2200px;
+}
+
+.laptop-lid {
+  position: relative;
+  z-index: 1;
+}
+
+.laptop-lid-tilt {
+  transform: rotateX(9deg);
+  transform-origin: center bottom;
+}
+
+.laptop-bezel {
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 22px 22px 8px 8px;
+  background: linear-gradient(180deg, #141924 0%, #0a0d14 100%);
+  padding: 11px 11px 13px;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+    0 40px 90px rgba(0, 0, 0, 0.55);
+}
+
+.laptop-camera {
+  width: 7px;
+  height: 7px;
+  margin: 0 auto 8px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 35%, #64748b, #0f172a 70%);
+  box-shadow: 0 0 0 3px #07090e;
+}
+
+.laptop-screen {
+  overflow: hidden;
+  border-radius: 10px;
+  background: rgba(13, 17, 26, 0.94);
+  min-height: 280px;
+}
+
+.laptop-hinge {
+  position: relative;
+  z-index: 0;
+  height: 10px;
+  margin: -2px 8% 0;
+  border-radius: 0 0 8px 8px;
+  background: linear-gradient(180deg, #1e2533, #0b0e14);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+.laptop-base {
+  position: relative;
+  z-index: 0;
+  height: 18px;
+  margin: 0 -1.5% 0;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-top: none;
+  border-radius: 0 0 28px 28px;
+  background: linear-gradient(180deg, #1a2030 0%, #0b0e14 100%);
+}
+
+.laptop-trackpad {
+  position: absolute;
+  top: 3px;
+  left: 50%;
+  width: 86px;
+  height: 6px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.16);
+}
+
+.laptop-float {
+  animation: laptop-float 8s ease-in-out infinite;
+}
+
+@keyframes laptop-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 @keyframes glow-drift-a {
@@ -448,8 +565,13 @@ body {
   .hero-arc-pulse,
   .hero-arc-dot,
   .hero-ray,
-  .hero-spark {
+  .hero-spark,
+  .laptop-float {
     animation: none !important;
+  }
+
+  .laptop-lid-tilt {
+    transform: none;
   }
 
   .card-interactive,

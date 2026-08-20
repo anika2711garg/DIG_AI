@@ -1,7 +1,9 @@
 "use client";
 
-import { useInView, useReducedMotion } from "framer-motion";
+import { useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+
+import { useMotionPreference } from "@/lib/use-motion-preference";
 
 export function AnimatedCounter({
   value,
@@ -16,7 +18,7 @@ export function AnimatedCounter({
 }) {
   const ref = useRef<HTMLSpanElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.6 });
-  const reduce = useReducedMotion();
+  const reduce = useMotionPreference();
   const [shown, setShown] = useState(0);
 
   useEffect(() => {
