@@ -5,9 +5,9 @@ type Tone = "blue" | "green" | "amber" | "red" | "slate";
 
 const TONE: Record<Tone, string> = {
   blue: "border-[rgba(59,130,246,0.28)] bg-[rgba(59,130,246,0.08)] text-[var(--accent-text)]",
-  green: "border-[rgba(34,197,94,0.28)] bg-[rgba(34,197,94,0.08)] text-[#86EFAC]",
-  amber: "border-[rgba(245,158,11,0.28)] bg-[rgba(245,158,11,0.08)] text-[#FCD34D]",
-  red: "border-[rgba(239,68,68,0.28)] bg-[rgba(239,68,68,0.08)] text-[#FCA5A5]",
+  green: "border-[rgba(34,197,94,0.28)] bg-[rgba(34,197,94,0.08)] text-[var(--tone-green)]",
+  amber: "border-[rgba(245,158,11,0.28)] bg-[rgba(245,158,11,0.08)] text-[var(--tone-amber)]",
+  red: "border-[rgba(239,68,68,0.28)] bg-[rgba(239,68,68,0.08)] text-[var(--tone-red)]",
   slate: "border-[var(--border-strong)] bg-[rgba(148,163,184,0.06)] text-[var(--text-secondary)]",
 };
 

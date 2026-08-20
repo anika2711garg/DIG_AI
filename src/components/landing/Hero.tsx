@@ -23,7 +23,7 @@ export function Hero() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="mb-6 inline-flex items-center gap-2 rounded-md border border-[rgba(148,163,184,0.2)] bg-[var(--card)]/70 px-2.5 py-1 font-mono text-[11px] text-[var(--text-soft)]"
+          className="mb-6 inline-flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--card)]/70 px-2.5 py-1 font-mono text-[11px] text-[var(--text-soft)]"
         >
           <span className="relative inline-flex h-1.5 w-1.5">
             <span className="absolute inset-0 rounded-full bg-[#60A5FA] status-pulse" />

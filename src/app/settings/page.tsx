@@ -1,20 +1,18 @@
 "use client";
 
-import { useState } from "react";
-
 import { AppShell } from "@/components/layout/AppShell";
 import { ThemeToggle, useTheme, type ThemeChoice } from "@/lib/theme";
-import { readPreferences, writePreferences, type UiPreferences } from "@/lib/preferences";
+import { usePreferences, writePreferences, type UiPreferences } from "@/lib/preferences";
 
 const FIELD =
   "mt-1.5 w-full max-w-xs rounded-lg border border-[var(--border-strong)] bg-[var(--background-mid)] px-3 py-2 text-sm text-[var(--text)]";
 
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [prefs, setPrefs] = useState<UiPreferences>(readPreferences);
+  const prefs = usePreferences();
 
   function update(next: Partial<UiPreferences>) {
-    setPrefs(writePreferences(next));
+    writePreferences(next);
   }
 
   return (
@@ -31,7 +29,7 @@ export default function SettingsPage() {
                 onClick={() => setTheme(value)}
                 className={`rounded-lg border px-3 py-1.5 text-sm capitalize ${
                   theme === value
-                    ? "border-[var(--primary)] text-[var(--text)]"
+                    ? "border-[var(--primary)] bg-[var(--card-strong)] text-[var(--text)]"
                     : "border-[var(--border)] text-[var(--text-secondary)]"
                 }`}
               >

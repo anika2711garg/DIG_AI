@@ -96,7 +96,7 @@ export function ApprovalView({
               Reject
             </Button>
           </div>
-          {error ? <p className="mt-3 text-xs text-[#FCA5A5]">{error}</p> : null}
+          {error ? <p className="mt-3 text-xs text-[var(--tone-red)]">{error}</p> : null}
         </motion.div>
         <DiffViewer diff={diff} />
       </div>

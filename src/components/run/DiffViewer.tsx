@@ -24,9 +24,9 @@ export function DiffViewer({ diff }: { diff?: string | null }) {
               key={`${i}-${line}`}
               className={
                 added
-                  ? "bg-[rgba(34,197,94,0.08)] text-[#86EFAC] hover:bg-[rgba(34,197,94,0.14)]"
+                  ? "bg-[rgba(34,197,94,0.08)] text-[var(--tone-green)] hover:bg-[rgba(34,197,94,0.14)]"
                   : removed
-                    ? "bg-[rgba(239,68,68,0.08)] text-[#FCA5A5] hover:bg-[rgba(239,68,68,0.14)]"
+                    ? "bg-[rgba(239,68,68,0.08)] text-[var(--tone-red)] hover:bg-[rgba(239,68,68,0.14)]"
                     : "text-[var(--text-secondary)] hover:bg-[var(--card-hover)]"
               }
             >

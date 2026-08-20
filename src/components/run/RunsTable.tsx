@@ -11,7 +11,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { FailureBadge } from "@/components/ui/FailureBadge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
-import { formatRelative, formatExact } from "@/lib/relative-time";
+import { formatStamp, formatExact } from "@/lib/relative-time";
+import { usePreferences } from "@/lib/preferences";
 import { isActiveState, runLabel, runTone } from "@/lib/status";
 import type { Confidence, Repo, Run } from "@/lib/types";
 
@@ -28,6 +29,7 @@ function matchesStatus(run: Run, filter: StatusFilter) {
 export function RunsTable({ runs, repos = [] }: { runs: Run[]; repos?: Repo[] }) {
   const params = useSearchParams();
   const router = useRouter();
+  const { timestamps } = usePreferences();
   const query = params.get("q") ?? "";
   const status = (params.get("status") as StatusFilter | null) ?? "all";
   const confidence = (params.get("confidence") as Confidence | "all" | null) ?? "all";
@@ -170,7 +172,7 @@ export function RunsTable({ runs, repos = [] }: { runs: Run[]; repos?: Repo[] })
                     <CostIndicator spent={run.spentUsd} budget={run.budgetUsd} />
                   </td>
                   <td className="px-4 py-3 text-[var(--text-muted)]" title={formatExact(run.createdAt)}>
-                    {formatRelative(run.createdAt)}
+                    {formatStamp(run.createdAt, timestamps)}
                   </td>
                   <td className="px-4 py-3">
                     <StatusBadge

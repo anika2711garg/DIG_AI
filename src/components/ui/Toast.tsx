@@ -32,7 +32,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {items.map((item) => (
           <div
             key={item.id}
-            className="rounded-lg border border-[var(--border)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] shadow-xl"
+            className="rounded-lg border border-[var(--border-strong)] bg-[var(--card)] px-3 py-2 text-sm text-[var(--text)] shadow-[0_16px_36px_rgba(15,23,42,0.16)]"
             role="status"
           >
             {item.message}

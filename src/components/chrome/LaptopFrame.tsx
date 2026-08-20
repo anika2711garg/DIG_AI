@@ -20,7 +20,7 @@ export function LaptopFrame({
 }) {
   return (
     <div className={cn("laptop", tilt && "laptop-float", className)}>
-      <div className="pointer-events-none absolute left-1/2 top-[12%] h-[55%] w-[78%] -translate-x-1/2 rounded-full bg-[rgba(59,130,246,0.2)] blur-[110px]" />
+      <div className="laptop-glow pointer-events-none absolute left-1/2 top-[12%] h-[55%] w-[78%] -translate-x-1/2 rounded-full bg-[rgba(59,130,246,0.2)] blur-[110px]" />
       <div className={cn("laptop-lid", tilt && "laptop-lid-tilt")}>
         <div className="laptop-bezel">
           <div className="laptop-camera" aria-hidden />

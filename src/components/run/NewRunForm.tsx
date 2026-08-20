@@ -8,7 +8,7 @@ import { Tooltip } from "@/components/ui/Tooltip";
 import { useToast } from "@/components/ui/Toast";
 import { api } from "@/lib/api";
 import { parseGithubIssue } from "@/lib/github";
-import { readPreferences } from "@/lib/preferences";
+import { usePreferences } from "@/lib/preferences";
 import type { Repo } from "@/lib/types";
 
 const FIELD =
@@ -20,7 +20,9 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
   const [repoId, setRepoId] = useState(repos[0]?.id ? String(repos[0].id) : "");
   const [fullName, setFullName] = useState("");
   const [issueNumber, setIssueNumber] = useState("");
-  const [mode, setMode] = useState(() => readPreferences().defaultMode);
+  const prefs = usePreferences();
+  const [modeOverride, setMode] = useState<string | null>(null);
+  const mode = modeOverride ?? prefs.defaultMode;
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -113,7 +115,7 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
           {pending ? "Starting…" : "Start run"}
         </Button>
       </div>
-      {error ? <p className="text-xs text-[#FCA5A5] sm:col-span-2 lg:col-span-4">{error}</p> : null}
+      {error ? <p className="text-xs text-[var(--tone-red)] sm:col-span-2 lg:col-span-4">{error}</p> : null}
     </form>
   );
 }

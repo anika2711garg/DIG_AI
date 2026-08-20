@@ -3,10 +3,12 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef } from "react";
 
-import { formatExact, formatRelative } from "@/lib/relative-time";
+import { formatExact, formatStamp } from "@/lib/relative-time";
+import { usePreferences } from "@/lib/preferences";
 import type { RunEvent } from "@/lib/types";
 
 export function EventStream({ events }: { events: RunEvent[] }) {
+  const { timestamps } = usePreferences();
   const newest = events[events.length - 1]?.id;
   const scroller = useRef<HTMLDivElement>(null);
 
@@ -37,7 +39,7 @@ export function EventStream({ events }: { events: RunEvent[] }) {
                 className="flex gap-3 rounded-md px-1 py-1 text-[var(--text-secondary)]"
               >
                 <span className="shrink-0 text-[var(--text-muted)]" title={formatExact(event.at)}>
-                  {event.at ? formatRelative(event.at) : "--"}
+                  {formatStamp(event.at, timestamps)}
                 </span>
                 <span className="text-[var(--accent-text)]">{event.type}</span>
                 {event.state ? <span className="text-[var(--text-soft)]">{event.state}</span> : null}

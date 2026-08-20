@@ -25,6 +25,10 @@ export function formatRelative(value?: string | null) {
   return formatExact(value);
 }
 
+export function formatStamp(value?: string | null, style: "relative" | "exact" = "relative") {
+  return style === "exact" ? formatExact(value) : formatRelative(value);
+}
+
 export function formatDuration(ms: number) {
   const seconds = Math.max(0, Math.floor(ms / 1000));
   const m = Math.floor(seconds / 60);

@@ -8,12 +8,12 @@ import { CopyButton } from "@/components/ui/CopyButton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { Button } from "@/components/ui/Button";
-import { formatExact, formatRelative } from "@/lib/relative-time";
-import { readPreferences } from "@/lib/preferences";
+import { formatExact, formatStamp } from "@/lib/relative-time";
+import { usePreferences } from "@/lib/preferences";
 import type { Trace } from "@/lib/types";
 
 export function TraceView({ traces }: { traces: Trace[] }) {
-  const prefs = readPreferences();
+  const prefs = usePreferences();
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState<"all" | "model" | "tool">("all");
 
@@ -59,13 +59,23 @@ export function TraceView({ traces }: { traces: Trace[] }) {
           description="Clear the query or type filter to see the full log."
         />
       ) : (
-        filtered.map((trace) => <TraceRow key={trace.id} trace={trace} compact={prefs.compactTraces} />)
+        filtered.map((trace) => (
+          <TraceRow key={trace.id} trace={trace} compact={prefs.compactTraces} timestamps={prefs.timestamps} />
+        ))
       )}
     </div>
   );
 }
 
-function TraceRow({ trace, compact }: { trace: Trace; compact: boolean }) {
+function TraceRow({
+  trace,
+  compact,
+  timestamps,
+}: {
+  trace: Trace;
+  compact: boolean;
+  timestamps: "relative" | "exact";
+}) {
   const [open, setOpen] = useState(!compact);
   const [wrap, setWrap] = useState(false);
   const ok = trace.success !== "false";
@@ -84,7 +94,7 @@ function TraceRow({ trace, compact }: { trace: Trace; compact: boolean }) {
         <StatusBadge label={trace.kind} tone={trace.kind === "model" ? "blue" : "slate"} />
         <span className="flex-1 truncate text-sm text-[var(--text-soft)]">{trace.name}</span>
         <span className="hidden font-mono text-[11px] text-[var(--text-muted)] sm:block" title={formatExact(trace.at)}>
-          {formatRelative(trace.at)} · {trace.latencyMs ?? 0}ms · {trace.tokensIn ?? 0}/{trace.tokensOut ?? 0}
+          {formatStamp(trace.at, timestamps)} · {trace.latencyMs ?? 0}ms · {trace.tokensIn ?? 0}/{trace.tokensOut ?? 0}
           {trace.costUsd != null ? ` · $${Number(trace.costUsd).toFixed(4)}` : ""}
         </span>
         <StatusBadge label={ok ? "ok" : "error"} tone={ok ? "green" : "red"} />

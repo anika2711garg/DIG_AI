@@ -58,7 +58,9 @@ export function SiteHeader({ variant = "marketing" }: { variant?: "marketing" | 
       transition={{ duration: reduce ? 0.15 : 0.6, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
         "fixed inset-x-0 top-0 z-50 transition-colors duration-300",
-        scrolled || variant === "app" ? "backdrop-blur-xl" : "bg-transparent",
+        scrolled || variant === "app"
+          ? "border-b border-[var(--border)] backdrop-blur-xl"
+          : "bg-transparent",
       )}
       style={scrolled || variant === "app" ? { background: "var(--header-bg)" } : undefined}
     >
