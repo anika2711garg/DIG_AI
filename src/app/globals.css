@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-:root {
+:root,
+html.dark {
   --background: #05070b;
   --background-mid: #080b12;
   --background-elevated: #0b0f17;
@@ -8,19 +9,57 @@
   --card-hover: #111722;
   --card-strong: #151b26;
   --border: rgba(148, 163, 184, 0.12);
+  --border-subtle: rgba(148, 163, 184, 0.08);
+  --border-strong: rgba(148, 163, 184, 0.16);
   --border-blue: rgba(59, 130, 246, 0.2);
   --primary: #3b82f6;
   --primary-bright: #60a5fa;
+  --accent-text: #93c5fd;
   --cyan: #38bdf8;
   --text: #f8fafc;
+  --text-soft: #e2e8f0;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   --success: #22c55e;
   --warning: #f59e0b;
   --error: #ef4444;
+  --header-bg: rgba(5, 7, 11, 0.78);
+  --grain-opacity: 0.13;
   --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
   --font-serif: var(--font-instrument), "Iowan Old Style", Georgia, serif;
+}
+
+html.light .laptop-bezel {
+  background: linear-gradient(180deg, #e8edf4 0%, #d9e0ea 100%);
+}
+
+html.light .laptop-hinge,
+html.light .laptop-base {
+  background: linear-gradient(180deg, #d7dee8, #c5ceda);
+}
+
+html.light {
+  --background: #f4f6f9;
+  --background-mid: #eef1f6;
+  --background-elevated: #e8edf3;
+  --card: #ffffff;
+  --card-hover: #f7f9fc;
+  --card-strong: #eef2f7;
+  --border: rgba(15, 23, 42, 0.1);
+  --border-subtle: rgba(15, 23, 42, 0.06);
+  --border-strong: rgba(15, 23, 42, 0.14);
+  --border-blue: rgba(37, 99, 235, 0.22);
+  --primary: #2563eb;
+  --primary-bright: #3b82f6;
+  --accent-text: #1d4ed8;
+  --cyan: #0284c7;
+  --text: #0f172a;
+  --text-soft: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --header-bg: rgba(244, 246, 249, 0.86);
+  --grain-opacity: 0.05;
 }
 
 @theme inline {
@@ -55,7 +94,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 40;
-  opacity: 0.13;
+  opacity: var(--grain-opacity);
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
@@ -90,7 +129,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #05070b;
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -353,7 +392,7 @@ body {
 .laptop-screen {
   overflow: hidden;
   border-radius: 10px;
-  background: rgba(13, 17, 26, 0.94);
+  background: color-mix(in srgb, var(--card) 94%, transparent);
   min-height: 280px;
 }
 

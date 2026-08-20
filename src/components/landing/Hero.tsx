@@ -23,7 +23,7 @@ export function Hero() {
           initial="hidden"
           animate="visible"
           variants={fadeUp}
-          className="mb-6 inline-flex items-center gap-2 rounded-md border border-[rgba(148,163,184,0.2)] bg-[#0D111A]/70 px-2.5 py-1 font-mono text-[11px] text-[#CBD5E1]"
+          className="mb-6 inline-flex items-center gap-2 rounded-md border border-[rgba(148,163,184,0.2)] bg-[var(--card)]/70 px-2.5 py-1 font-mono text-[11px] text-[var(--text-soft)]"
         >
           <span className="relative inline-flex h-1.5 w-1.5">
             <span className="absolute inset-0 rounded-full bg-[#60A5FA] status-pulse" />
@@ -38,7 +38,7 @@ export function Hero() {
             animate="visible"
             variants={fadeUp}
             transition={{ delay: reduce ? 0 : 0.06 }}
-            className="text-[2.6rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[#F8FAFC] sm:text-[4.25rem] lg:text-[5rem]"
+            className="text-[2.6rem] font-semibold leading-[1.05] tracking-[-0.03em] text-[var(--text)] sm:text-[4.25rem] lg:text-[5rem]"
           >
             Build faster with
           </motion.h1>
@@ -47,9 +47,9 @@ export function Hero() {
             animate="visible"
             variants={fadeUp}
             transition={{ delay: reduce ? 0 : 0.12 }}
-            className="text-[2.7rem] leading-[1.05] text-[#F8FAFC] sm:text-[4.4rem] lg:text-[5.15rem]"
+            className="text-[2.7rem] leading-[1.05] text-[var(--text)] sm:text-[4.4rem] lg:text-[5.15rem]"
           >
-            <span className="font-serif italic font-normal tracking-normal text-[#E2E8F0]">
+            <span className="font-serif italic font-normal tracking-normal text-[var(--text-soft)]">
               Lumine
             </span>{" "}
             <InkUnderline>
@@ -63,7 +63,7 @@ export function Hero() {
           animate="visible"
           variants={fadeUp}
           transition={{ delay: reduce ? 0 : 0.22 }}
-          className="mt-6 max-w-[36rem] text-[15px] leading-7 text-[#94A3B8] sm:text-base"
+          className="mt-6 max-w-[36rem] text-[15px] leading-7 text-[var(--text-secondary)] sm:text-base"
         >
           Issue in, draft PR out — but only after a failing test proves the bug exists.
           If we can&apos;t reproduce it, we stop. That&apos;s the product.

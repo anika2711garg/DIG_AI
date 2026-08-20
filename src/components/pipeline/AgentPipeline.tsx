@@ -1,20 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Check, LoaderCircle, X } from "lucide-react";
 
-import { StatusDot } from "@/components/motion/StatusDot";
 import { cn } from "@/lib/cn";
 import { PIPELINE_STAGES, stageStatus } from "@/lib/pipeline";
 import type { RunState } from "@/lib/types";
 import { useMotionPreference } from "@/lib/use-motion-preference";
-
-function toneFor(status: ReturnType<typeof stageStatus>) {
-  if (status === "complete") return "green" as const;
-  if (status === "active") return "blue" as const;
-  if (status === "awaiting") return "amber" as const;
-  if (status === "failed") return "red" as const;
-  return "slate" as const;
-}
 
 export function AgentPipeline({
   current = "reproducing",
@@ -34,7 +26,6 @@ export function AgentPipeline({
     >
       {PIPELINE_STAGES.map((stage, index) => {
         const status = stageStatus(stage.id, current);
-        const tone = toneFor(status);
         const flowing = status === "complete" || status === "active" || status === "awaiting";
 
         return (
@@ -42,20 +33,31 @@ export function AgentPipeline({
             <div className="flex flex-col items-center gap-2">
               <div
                 className={cn(
-                  "relative flex h-8 w-8 items-center justify-center rounded-full border bg-[#0D111A]",
+                  "relative flex h-8 w-8 items-center justify-center rounded-full border bg-[var(--card)]",
                   status === "active" && "border-[rgba(59,130,246,0.55)]",
                   status === "complete" && "border-[rgba(34,197,94,0.45)]",
                   status === "awaiting" && "border-[rgba(245,158,11,0.5)]",
                   status === "failed" && "border-[rgba(239,68,68,0.5)]",
-                  status === "inactive" && "border-[rgba(148,163,184,0.16)]",
+                  status === "inactive" && "border-[var(--border-strong)]",
                 )}
               >
-                <StatusDot tone={tone} pulse={status === "active" || status === "awaiting"} />
+                {status === "complete" ? (
+                  <Check className="h-3.5 w-3.5 text-[#22C55E]" strokeWidth={2.2} />
+                ) : status === "failed" ? (
+                  <X className="h-3.5 w-3.5 text-[#EF4444]" strokeWidth={2.2} />
+                ) : status === "active" || status === "awaiting" ? (
+                  <LoaderCircle
+                    className={cn("h-3.5 w-3.5 text-[#60A5FA]", !reduce && "animate-spin")}
+                    strokeWidth={2}
+                  />
+                ) : (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--text-muted)]" />
+                )}
               </div>
               <span
                 className={cn(
                   "font-mono text-[10px] uppercase tracking-[0.14em]",
-                  status === "inactive" ? "text-[#64748B]" : "text-[#E2E8F0]",
+                  status === "inactive" ? "text-[var(--text-muted)]" : "text-[var(--text-soft)]",
                   compact && "hidden sm:block",
                 )}
               >
@@ -63,7 +65,7 @@ export function AgentPipeline({
               </span>
             </div>
             {index < PIPELINE_STAGES.length - 1 ? (
-              <div className="relative mx-2 h-px w-8 overflow-hidden bg-[rgba(148,163,184,0.16)] sm:w-12">
+              <div className="relative mx-2 h-px w-8 overflow-hidden bg-[var(--border-strong)] sm:w-12">
                 <motion.span
                   className="absolute inset-y-0 left-0 bg-gradient-to-r from-transparent via-[#60A5FA] to-transparent"
                   initial={{ x: "-100%" }}

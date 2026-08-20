@@ -9,7 +9,7 @@ export function Logo({ className, compact = false }: { className?: string; compa
   const reduce = useMotionPreference();
 
   return (
-    <span className={cn("inline-flex items-center gap-2 text-[#F8FAFC]", className)}>
+    <span className={cn("inline-flex items-center gap-2 text-[var(--text)]", className)}>
       <span className="relative h-5 w-5 shrink-0">
         <motion.svg
           viewBox="0 0 24 24"

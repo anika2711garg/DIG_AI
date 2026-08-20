@@ -19,7 +19,7 @@ export default async function ApprovalPage({
 
   return (
     <AppShell title={`Approval #${run.id}`} crumbs={`Runs / ${run.id} / Approval`}>
-      <Link href={`/runs/${run.id}`} className="mb-4 inline-block text-sm text-[#94A3B8] hover:text-[#F8FAFC]">
+      <Link href={`/runs/${run.id}`} className="mb-4 inline-block text-sm text-[var(--text-secondary)] hover:text-[var(--text)]">
         Back to run
       </Link>
       <ApprovalView run={run} approval={approval} />

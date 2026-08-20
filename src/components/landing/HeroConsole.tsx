@@ -44,8 +44,8 @@ export function HeroConsole() {
         <div className="px-4 py-8 sm:px-8 sm:py-10">
           <LivePipeline />
         </div>
-        <div className="border-t border-[rgba(148,163,184,0.1)] bg-[#080B12]/80 px-4 py-4 font-mono text-[12px] sm:px-8">
-          <div className="mb-2 text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
+        <div className="border-t border-[var(--border)] bg-[var(--background-mid)]/80 px-4 py-4 font-mono text-[12px] sm:px-8">
+          <div className="mb-2 text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
             event stream
             <span className="terminal-cursor" />
           </div>
@@ -57,9 +57,9 @@ export function HeroConsole() {
                   initial={{ opacity: 0, x: -6 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="text-[#94A3B8]"
+                  className="text-[var(--text-secondary)]"
                 >
-                  <span className="text-[#64748B]">{line.t}</span>
+                  <span className="text-[var(--text-muted)]">{line.t}</span>
                   <span className="mx-2 text-[#60A5FA]">▸</span>
                   {line.msg}
                 </motion.p>

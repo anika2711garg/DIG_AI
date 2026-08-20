@@ -23,7 +23,7 @@ export function AnimatedCard({
       variants={reduce ? fadeUpReduced : cardReveal}
       style={style}
       className={cn(
-        "card-interactive group rounded-xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A] p-5",
+        "card-interactive group rounded-xl border border-[var(--border)] bg-[var(--card)] p-5",
         className,
       )}
     >

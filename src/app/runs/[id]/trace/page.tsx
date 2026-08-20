@@ -21,7 +21,7 @@ export default async function TracePage({
 
   return (
     <AppShell title={`Trace #${run.id}`} crumbs={`Runs / ${run.id} / Trace`}>
-      <Link href={`/runs/${run.id}`} className="mb-4 inline-block text-sm text-[#94A3B8] hover:text-[#F8FAFC]">
+      <Link href={`/runs/${run.id}`} className="mb-4 inline-block text-sm text-[var(--text-secondary)] hover:text-[var(--text)]">
         Back to run
       </Link>
       {traces.length === 0 ? (

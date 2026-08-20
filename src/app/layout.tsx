@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 
 import { GlowBackground } from "@/components/motion/GlowBackground";
+import { Providers } from "@/components/providers";
 
 import "./globals.css";
 
@@ -27,15 +28,22 @@ export const metadata: Metadata = {
     "Issue in, draft PR out. A human-gated issue-to-PR agent that reproduces, patches, and verifies before anything ships.",
 };
 
+const THEME_BOOT = `(function(){try{var t=localStorage.getItem("neone-theme");var d=t==="dark"||(t!=="light"&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=d?"dark":"light";document.documentElement.classList.add(r);document.documentElement.style.colorScheme=r;}catch(e){document.documentElement.classList.add("dark");}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable} ${geistMono.variable} ${instrument.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
       <body className="min-h-screen font-sans antialiased">
-        <GlowBackground />
-        <div className="grain" aria-hidden />
-        {children}
+        <Providers>
+          <GlowBackground />
+          <div className="grain" aria-hidden />
+          {children}
+        </Providers>
       </body>
     </html>
   );

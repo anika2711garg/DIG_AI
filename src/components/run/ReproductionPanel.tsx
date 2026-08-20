@@ -1,4 +1,6 @@
+import { ConfidenceBadge } from "@/components/ui/ConfidenceBadge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Tooltip } from "@/components/ui/Tooltip";
 import type { Confidence, RunState } from "@/lib/types";
 
 export function ReproductionPanel({
@@ -23,22 +25,27 @@ export function ReproductionPanel({
             : tone === "red"
               ? "rgba(239,68,68,0.28)"
               : "rgba(148,163,184,0.12)",
-        background: "#0D111A",
+        background: "var(--card)",
       }}
     >
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm font-medium">Reproduction</p>
+        <Tooltip content="A failing test must match the reported bug before a patch is trusted.">
+          <p className="text-sm font-medium">Reproduction</p>
+        </Tooltip>
         <StatusBadge
           label={passing ? "PASSING TEST" : failed ? "FAILED TEST" : "PENDING"}
           tone={tone}
           pulse={state === "reproducing"}
         />
       </div>
-      <p className="mt-3 text-sm text-[#94A3B8]">
-        {confidence
-          ? `Confidence grade: ${confidence}. The label rides on the run and the PR.`
-          : "A failing-test-turned-passing is the only proof the agent accepts."}
-      </p>
+      <div className="mt-3 flex items-center justify-between gap-3">
+        <p className="text-sm text-[var(--text-secondary)]">
+          {confidence
+            ? "The grade rides on the run and the PR."
+            : "A failing-test-turned-passing is the only proof the agent accepts."}
+        </p>
+        <ConfidenceBadge value={confidence} />
+      </div>
     </div>
   );
 }

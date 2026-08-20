@@ -17,8 +17,8 @@ const VARIANTS: Record<Variant, string> = {
   primary:
     "border border-[rgba(96,165,250,0.35)] bg-gradient-to-r from-[#2563EB] to-[#38BDF8] text-white shadow-[0_0_24px_rgba(59,130,246,0.18)] hover:shadow-[0_0_32px_rgba(59,130,246,0.32)]",
   secondary:
-    "border border-[rgba(148,163,184,0.18)] bg-[#0D111A]/70 text-[#E2E8F0] hover:border-[rgba(148,163,184,0.4)] hover:bg-[#151B26]",
-  ghost: "border border-transparent bg-transparent text-[#94A3B8] hover:text-[#F8FAFC]",
+    "border border-[var(--border-strong)] bg-[var(--card)] text-[var(--text-soft)] hover:border-[var(--border-strong)] hover:bg-[var(--card-strong)]",
+  ghost: "border border-transparent bg-transparent text-[var(--text-secondary)] hover:text-[var(--text)]",
   danger:
     "border border-[rgba(239,68,68,0.3)] bg-[rgba(239,68,68,0.1)] text-[#FCA5A5] hover:border-[rgba(239,68,68,0.5)]",
   warning:

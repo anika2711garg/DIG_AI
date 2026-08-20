@@ -25,12 +25,12 @@ export function LaptopFrame({
         <div className="laptop-bezel">
           <div className="laptop-camera" aria-hidden />
           <div className="laptop-screen image-border">
-            <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.1)] px-4 py-3">
+            <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
               <div className="flex min-w-0 items-center gap-2">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#EF4444]/75" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B]/75" />
                 <span className="h-2.5 w-2.5 rounded-full bg-[#22C55E]/75" />
-                <span className="ml-2 truncate font-mono text-[11px] text-[#64748B]">{path}</span>
+                <span className="ml-2 truncate font-mono text-[11px] text-[var(--text-muted)]">{path}</span>
               </div>
               <LiveIndicator label={status} pulse={pulse} />
             </div>

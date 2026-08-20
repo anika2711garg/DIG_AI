@@ -1,19 +1,26 @@
 "use client";
 
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import { LiveIndicator } from "@/components/motion/LiveIndicator";
 import { AgentPipeline } from "@/components/pipeline/AgentPipeline";
 import { EventStream } from "@/components/run/EventStream";
+import { EvidenceCard } from "@/components/run/EvidenceCard";
 import { ReproductionPanel } from "@/components/run/ReproductionPanel";
 import { VerifyTrack } from "@/components/run/VerifyTrack";
+import { ConnectionStatus, type LinkState } from "@/components/ui/ConnectionStatus";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { CostIndicator } from "@/components/ui/CostIndicator";
+import { FailureBadge } from "@/components/ui/FailureBadge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { Tooltip } from "@/components/ui/Tooltip";
 import { api } from "@/lib/api";
+import { issueUrl } from "@/lib/github";
 import { LIVE_STATUS } from "@/lib/pipeline";
+import { formatDuration } from "@/lib/relative-time";
 import { isActiveState, runLabel, runTone } from "@/lib/status";
-import type { Run, RunEvent, RunState } from "@/lib/types";
+import type { Repo, Run, RunEvent, RunState } from "@/lib/types";
 
 const SSE_EVENT_TYPES = [
   "run.created",
@@ -38,6 +45,14 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
   const [run, setRun] = useState(initialRun);
   const [events, setEvents] = useState(initialEvents);
   const [elapsed, setElapsed] = useState(0);
+  const [link, setLink] = useState<LinkState>("polling");
+  const [repo, setRepo] = useState<Repo | null>(null);
+
+  useEffect(() => {
+    api.listRepos()
+      .then((repos) => setRepo(repos.find((item) => item.id === initialRun.repoId) ?? null))
+      .catch(() => undefined);
+  }, [initialRun.repoId]);
 
   useEffect(() => {
     const started = run.startedAt ? new Date(run.startedAt).getTime() : Date.now();
@@ -55,9 +70,10 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
         if (!cancelled) {
           setRun(nextRun);
           setEvents(nextEvents);
+          setLink((current) => (current === "offline" ? "polling" : current));
         }
       } catch {
-        /* keep last good snapshot */
+        if (!cancelled) setLink("offline");
       }
     };
     const id = window.setInterval(pull, 4000);
@@ -69,6 +85,7 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
 
   useEffect(() => {
     const source = new EventSource(`/api/v1/runs/${run.id}/stream`);
+    source.onopen = () => setLink("live");
     const ingest = (message: MessageEvent) => {
       try {
         const data = JSON.parse(message.data) as Record<string, unknown>;
@@ -106,41 +123,87 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
       source.addEventListener(type, ingest);
     }
     source.onerror = () => {
+      setLink("polling");
       source.close();
     };
     return () => source.close();
   }, [run.id]);
 
-  const seconds = useMemo(() => Math.floor(elapsed / 1000), [elapsed]);
   const tone = runTone(run.state);
+  const latest = events.at(-1);
+  const github = repo ? issueUrl(repo.fullName, run.issueNumber) : null;
+
+  const resources = useMemo(
+    () => [
+      { label: "Issue", value: `#${run.issueNumber}` },
+      { label: "Mode", value: run.mode },
+      { label: "Elapsed", value: formatDuration(elapsed) },
+      { label: "Attempt", value: `${run.currentAttempt ?? 1} / ${run.maxAttempts ?? 3}` },
+    ],
+    [elapsed, run.currentAttempt, run.issueNumber, run.maxAttempts, run.mode],
+  );
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Link href="/runs" className="inline-flex items-center gap-2 text-sm text-[#94A3B8] hover:text-[#F8FAFC]">
+        <Link href="/runs" className="inline-flex items-center gap-2 text-sm text-[var(--text-secondary)] hover:text-[var(--text)]">
           <ArrowLeft className="h-4 w-4" strokeWidth={1.7} />
           All runs
         </Link>
         <div className="flex flex-wrap items-center gap-2">
+          <ConnectionStatus state={link} />
           <StatusBadge label={runLabel(run.state)} tone={tone} pulse={isActiveState(run.state)} />
-          <LiveIndicator
-            label={LIVE_STATUS[run.state]}
-            tone={tone}
-            pulse={isActiveState(run.state)}
-          />
         </div>
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-4">
-        <Metric label="Issue" value={`#${run.issueNumber}`} />
-        <Metric label="Mode" value={run.mode} />
-        <Metric label="Elapsed" value={`${seconds}s`} />
-        <Metric label="Spend" value={`$${Number(run.spentUsd ?? 0).toFixed(4)}`} />
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="font-mono text-[11px] text-[var(--text-muted)]">{repo?.fullName ?? `repo #${run.repoId}`}</p>
+          <h2 className="mt-1 text-lg font-medium text-[var(--text)]">Issue #{run.issueNumber}</h2>
+          <p className="mt-1 text-sm text-[var(--text-secondary)]">{LIVE_STATUS[run.state]}</p>
+          {latest ? (
+            <p className="mt-1 font-mono text-[11px] text-[var(--text-muted)]">Latest: {latest.type}</p>
+          ) : null}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <CopyButton value={String(run.id)} label={`#${run.id}`} />
+          {github ? (
+            <a
+              href={github}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-xs text-[var(--accent-text)]"
+            >
+              GitHub <ExternalLink className="h-3 w-3" />
+            </a>
+          ) : null}
+          <FailureBadge type={run.failureType} />
+        </div>
       </div>
 
-      <div className="rounded-2xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A] px-4 py-6">
-        <AgentPipeline current={run.state} compact />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        {resources.map((item) => (
+          <div key={item.label} className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-3">
+            <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">{item.label}</p>
+            <p className="mt-1 font-mono text-sm text-[var(--text)]">{item.value}</p>
+          </div>
+        ))}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--card)] px-3 py-3">
+          <p className="text-[11px] uppercase tracking-[0.14em] text-[var(--text-muted)]">Budget</p>
+          <div className="mt-2">
+            <CostIndicator spent={run.spentUsd} budget={run.budgetUsd} />
+          </div>
+        </div>
       </div>
+
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--card)] px-4 py-6">
+        <AgentPipeline current={run.state} compact />
+        <p className="mt-3 text-center font-mono text-[11px] text-[var(--text-muted)]">
+          Attempt {run.currentAttempt ?? 1} / {run.maxAttempts ?? 3}
+        </p>
+      </div>
+
+      <EvidenceCard state={run.state} confidence={run.confidence} />
 
       <div className="grid gap-4 lg:grid-cols-2">
         <ReproductionPanel state={run.state} confidence={run.confidence} />
@@ -150,22 +213,18 @@ export function RunView({ initialRun, initialEvents }: { initialRun: Run; initia
       <EventStream events={events} />
 
       <div className="flex flex-wrap gap-3 text-sm">
-        <Link href={`/runs/${run.id}/trace`} className="text-[#93C5FD] hover:underline">
+        <Link href={`/runs/${run.id}/trace`} className="text-[var(--accent-text)] hover:underline">
           Open trace
         </Link>
-        <Link href={`/runs/${run.id}/approval`} className="text-[#93C5FD] hover:underline">
+        <Link href={`/runs/${run.id}/approval`} className="text-[var(--accent-text)] hover:underline">
           Approval gate
         </Link>
+        <Tooltip content="Tokens consumed by model calls on this run.">
+          <span className="text-[var(--text-muted)]">
+            {run.tokensUsed ?? 0} / {run.tokenBudget ?? "—"} tokens
+          </span>
+        </Tooltip>
       </div>
-    </div>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A] px-3 py-3">
-      <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748B]">{label}</p>
-      <p className="mt-1 font-mono text-sm text-[#F8FAFC]">{value}</p>
     </div>
   );
 }

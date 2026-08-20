@@ -11,7 +11,7 @@ export function DataFlowLine({
 }) {
   return (
     <div className={cn("flex min-w-0 flex-col gap-2", className)}>
-      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
+      <div className="flex items-center justify-between text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
         <span>{from}</span>
         <span>{to}</span>
       </div>

@@ -18,7 +18,7 @@ const PARTICLES = [
 export function GlowBackground() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
-      <div className="absolute inset-0 bg-[#05070B]" />
+      <div className="absolute inset-0 bg-[var(--background)]" />
       <div className="bg-grid absolute inset-0 opacity-90" />
       <div className="ambient-glow ambient-glow-a -left-[8%] top-[-8%]" />
       <div className="ambient-glow ambient-glow-b right-[-6%] top-[28%]" />

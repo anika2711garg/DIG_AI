@@ -26,7 +26,7 @@ export function LivePipeline({ compact = false }: { compact?: boolean }) {
   return (
     <div className="space-y-5">
       <AgentPipeline current={current} compact={compact} />
-      <p className="text-center font-mono text-[11px] tracking-[0.14em] text-[#64748B]">
+      <p className="text-center font-mono text-[11px] tracking-[0.14em] text-[var(--text-muted)]">
         {LIVE_STATUS[current]}
       </p>
     </div>

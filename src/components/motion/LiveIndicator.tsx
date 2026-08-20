@@ -15,7 +15,7 @@ export function LiveIndicator({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-2 rounded-full border border-[rgba(148,163,184,0.12)] bg-[#0D111A]/80 px-2.5 py-1 text-[11px] text-[#94A3B8]",
+        "inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--card)_80%,transparent)] px-2.5 py-1 text-[11px] text-[var(--text-secondary)]",
         className,
       )}
     >

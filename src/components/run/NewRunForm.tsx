@@ -4,20 +4,37 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { Tooltip } from "@/components/ui/Tooltip";
+import { useToast } from "@/components/ui/Toast";
 import { api } from "@/lib/api";
+import { parseGithubIssue } from "@/lib/github";
+import { readPreferences } from "@/lib/preferences";
 import type { Repo } from "@/lib/types";
 
 const FIELD =
-  "mt-1.5 w-full rounded-lg border border-[rgba(148,163,184,0.14)] bg-[#080B12] px-3 py-2.5 text-sm text-[#F8FAFC] outline-none focus:border-[rgba(96,165,250,0.45)]";
+  "mt-1.5 w-full rounded-lg border border-[var(--border-strong)] bg-[var(--background-mid)] px-3 py-2.5 text-sm text-[var(--text)] outline-none focus:border-[rgba(96,165,250,0.45)]";
 
 export function NewRunForm({ repos }: { repos: Repo[] }) {
   const router = useRouter();
+  const { push } = useToast();
   const [repoId, setRepoId] = useState(repos[0]?.id ? String(repos[0].id) : "");
   const [fullName, setFullName] = useState("");
   const [issueNumber, setIssueNumber] = useState("");
-  const [mode, setMode] = useState("permissive");
+  const [mode, setMode] = useState(() => readPreferences().defaultMode);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+
+  function onIssueChange(value: string) {
+    const parsed = parseGithubIssue(value);
+    if (parsed) {
+      setFullName(parsed.fullName);
+      setIssueNumber(String(parsed.issueNumber));
+      const existing = repos.find((repo) => repo.fullName.toLowerCase() === parsed.fullName.toLowerCase());
+      if (existing) setRepoId(String(existing.id));
+      return;
+    }
+    setIssueNumber(value);
+  }
 
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -39,6 +56,7 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
         mode,
       });
       await api.startRun(run.id).catch(() => undefined);
+      push("Run started", "success");
       router.push(`/runs/${run.id}`);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not start run");
@@ -48,9 +66,9 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <form id="new-run" onSubmit={onSubmit} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {repos.length > 0 ? (
-        <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
+        <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
           Repository
           <select value={repoId} onChange={(e) => setRepoId(e.target.value)} className={FIELD}>
             {repos.map((repo) => (
@@ -61,7 +79,7 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
           </select>
         </label>
       ) : (
-        <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
+        <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
           Repository
           <input
             value={fullName}
@@ -71,22 +89,23 @@ export function NewRunForm({ repos }: { repos: Repo[] }) {
           />
         </label>
       )}
-      <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
-        Issue number
+      <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+        Issue number or URL
         <input
           value={issueNumber}
-          onChange={(e) => setIssueNumber(e.target.value)}
-          placeholder="412"
-          inputMode="numeric"
+          onChange={(e) => onIssueChange(e.target.value)}
+          placeholder="412 or github.com/…/issues/412"
           className={FIELD}
         />
       </label>
-      <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[#64748B]">
-        Mode
+      <label className="font-mono text-[10px] uppercase tracking-[0.16em] text-[var(--text-muted)]">
+        <Tooltip content="Strict stops without a strong reproduction. Permissive continues with a grade.">
+          <span>Mode</span>
+        </Tooltip>
         <select value={mode} onChange={(e) => setMode(e.target.value)} className={FIELD}>
           <option value="permissive">permissive</option>
           <option value="strict">strict</option>
-          <option value="vibes">vibes</option>
+          <option value="vibes">vibes (ablation)</option>
         </select>
       </label>
       <div className="flex items-end">
