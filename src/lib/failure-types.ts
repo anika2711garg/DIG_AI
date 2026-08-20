@@ -1,0 +1,15 @@
+export const FAILURE_TYPES = [
+  "cant_localize",
+  "cant_reproduce",
+  "weak_reproduction",
+  "build_failed",
+  "patch_apply_failed",
+  "tests_regressed",
+  "flaky_suite",
+  "revert_check_failed",
+  "budget_exceeded",
+  "attempts_exhausted",
+  "injection_suspected",
+  "rejected_by_human",
+  "infra_error",
+] as const;
