@@ -118,35 +118,47 @@ body {
   animation: particle-float 16s ease-in-out infinite;
 }
 
-.hero-crescent {
+.hero-horizon-glow {
   position: absolute;
   left: 50%;
   top: 18%;
-  width: min(1400px, 160%);
-  height: 420px;
+  width: min(900px, 80%);
+  height: 280px;
   transform: translateX(-50%);
-  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.2), transparent 70%);
+  filter: blur(24px);
+  animation: horizon-breathe 8s ease-in-out infinite;
 }
 
-.hero-crescent-arc {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1px solid transparent;
-  border-top-color: rgba(96, 165, 250, 0.55);
-  box-shadow:
-    0 -18px 80px rgba(59, 130, 246, 0.22),
-    inset 0 20px 80px rgba(59, 130, 246, 0.08);
-  filter: blur(0.2px);
+.hero-arc-pulse {
+  animation: arc-pulse 6s ease-in-out infinite;
+}
+
+.hero-arc-dot {
+  offset-path: path("M40 360 C 280 40, 920 40, 1160 360");
+  offset-rotate: 0deg;
+  animation: arc-travel 9s linear infinite;
 }
 
 .hero-ray {
   position: absolute;
-  top: 0;
+  top: 12%;
   width: 1px;
   height: 280px;
-  background: linear-gradient(to bottom, rgba(147, 197, 253, 0.28), transparent);
+  background: linear-gradient(to bottom, rgba(186, 230, 253, 0.42), transparent);
   pointer-events: none;
+  transform-origin: top;
+  animation: ray-shimmer 5.5s ease-in-out infinite;
+}
+
+.hero-spark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  box-shadow: 0 0 10px rgba(147, 197, 253, 0.8);
+  animation: spark-twinkle 3.8s ease-in-out infinite;
 }
 
 .nav-link {
@@ -354,6 +366,58 @@ body {
   }
 }
 
+@keyframes horizon-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.08);
+  }
+}
+
+@keyframes arc-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes arc-travel {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+@keyframes ray-shimmer {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scaleY(0.92);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scaleY(1.08);
+  }
+}
+
+@keyframes spark-twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(0.7);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.15);
+  }
+}
+
 @keyframes data-travel {
   0% {
     transform: translateX(0);
@@ -380,7 +444,11 @@ body {
   .shimmer,
   .image-border::before,
   .data-dot,
-  .hero-crescent-arc {
+  .hero-horizon-glow,
+  .hero-arc-pulse,
+  .hero-arc-dot,
+  .hero-ray,
+  .hero-spark {
     animation: none !important;
   }
 

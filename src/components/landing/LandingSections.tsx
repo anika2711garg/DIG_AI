@@ -14,7 +14,7 @@ import {
 import { AnimatedCard } from "@/components/motion/AnimatedCard";
 import { AnimatedSection } from "@/components/motion/AnimatedSection";
 import { DataFlowLine } from "@/components/motion/DataFlowLine";
-import { AgentPipeline } from "@/components/pipeline/AgentPipeline";
+import { LivePipeline } from "@/components/pipeline/LivePipeline";
 import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { staggerContainer } from "@/lib/motion";
@@ -84,7 +84,7 @@ export function LandingSections() {
           The agent is a persisted state machine. Every transition is written before any side effect.
         </p>
         <div className="mt-10 rounded-2xl border border-[rgba(148,163,184,0.12)] bg-[#0D111A]/80 px-4 py-8">
-          <AgentPipeline current="verifying" />
+          <LivePipeline />
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <DataFlowLine from="Issue" to="Agent" />

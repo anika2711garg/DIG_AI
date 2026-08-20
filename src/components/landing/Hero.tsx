@@ -4,7 +4,8 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 
-import { FloatingImage } from "@/components/motion/FloatingImage";
+import { HeroConsole } from "@/components/landing/HeroConsole";
+import { HeroHorizon } from "@/components/landing/HeroHorizon";
 import { LiveIndicator } from "@/components/motion/LiveIndicator";
 import { Button } from "@/components/ui/Button";
 import { fadeUp, fadeUpReduced } from "@/lib/motion";
@@ -15,12 +16,7 @@ export function Hero() {
 
   return (
     <section className="relative overflow-hidden pt-28 sm:pt-32">
-      <div className="hero-crescent" aria-hidden>
-        <div className="hero-crescent-arc" />
-        <span className="hero-ray left-[28%]" />
-        <span className="hero-ray left-[50%] h-[320px] opacity-70" />
-        <span className="hero-ray left-[71%] opacity-50" />
-      </div>
+      <HeroHorizon />
 
       <div className="relative mx-auto flex max-w-3xl flex-col items-center px-5 text-center">
         <motion.div
@@ -29,7 +25,10 @@ export function Hero() {
           variants={variants}
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-[rgba(96,165,250,0.28)] bg-[#0D111A]/70 px-3 py-1 text-xs text-[#E2E8F0] shadow-[0_0_24px_rgba(59,130,246,0.12)]"
         >
-          <span className="text-[#93C5FD]">✦</span>
+          <span className="relative inline-flex h-1.5 w-1.5">
+            <span className="absolute inset-0 rounded-full bg-[#60A5FA] status-pulse" />
+            <span className="relative h-1.5 w-1.5 rounded-full bg-[#93C5FD]" />
+          </span>
           Early Access Beta
         </motion.div>
 
@@ -97,7 +96,7 @@ export function Hero() {
         </motion.div>
       </div>
 
-      <FloatingImage />
+      <HeroConsole />
     </section>
   );
 }

@@ -26,6 +26,7 @@ export function GlowBackground() {
       <div className="bg-grid absolute inset-0 opacity-90" />
       <div className="ambient-glow ambient-glow-a -left-[8%] top-[-8%]" />
       <div className="ambient-glow ambient-glow-b right-[-6%] top-[28%]" />
+      <div className="ambient-glow ambient-glow-a bottom-[-18%] left-[30%] opacity-40" />
       {!reduce &&
         PARTICLES.map((p, i) => (
           <span
